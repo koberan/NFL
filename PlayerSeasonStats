@@ -1,0 +1,2307 @@
+##### ------------------ PlayerSeasonStats (Model 2) ------------------ #####
+
+## ---> RUN IN VS CODE 
+
+### IMPORTS ###
+import requests
+import json
+import pandas as pd
+import math
+import numpy as np
+from IPython.display import display, HTML, IFrame
+from ipywidgets import interact_manual, interact, widgets
+import emoji
+import matplotlib
+import matplotlib.pyplot as plt
+import pandas as pd
+import folium
+import warnings
+from IPython.display import Image
+import numpy as np
+import plotly_express
+from io import BytesIO
+
+############### 2022 ###############
+### GETS WEB API AND CONVERTS TO JSON ###
+#def get_api():
+key2 = 'e69104dd27724727b0812310bcdf8624'
+endpoint2 = 'https://api.sportsdata.io/v3/nfl/stats/json/PlayerSeasonStats/'
+season2 = '2022'
+headers2 = {'season2' : season2, 'key2' : key2}
+url2 = (f'https://api.sportsdata.io/v3/nfl/stats/json/PlayerSeasonStats/{season2}?key={key2}')
+response2 = requests.get(url2,headers=headers2) 
+response2.raise_for_status()
+code2 = response2.json()
+#return code
+
+### CONVERTS JSON TO PANDA ###
+#def panda_convert():
+pd.set_option('display.max_columns', None)
+pd.set_option('display.max_rows', None)
+rough_pd2 = pd.DataFrame(columns=['Name', 'Pos', 'Unit', 'Team', 'Starts', "Pass Att", "Pass Cmp", "Pass Yds", 
+                           "Pass TDs", "Pass INTs", "Pass Lng", "Rush Att", "Rush Yds", "Rush TDs", "Rush Lng",
+                           "Rec Tgts", "Rec", "Rec Yds", "Rec TDs", "Rec Lng", "Fumb", "Punt Ret", 
+                           "Punt Ret Yds", "Punt Ret TDs", "Punt Ret Lng", "Kick Ret", "Kick Ret Yds", 
+                           "Kick Ret TDs", "Kick Ret Lng", "Solo Tkls", "Ass Tkls", "TFL", "Sacks", "QB Hits", 
+                           "PD", "FF", "FR", "Fum Ret TDs", "Int", "Int Ret Yds", "Int Ret TDs", "Punts", 
+                           "Punt Yds", "Punt Lng", "FGA", "FGM", "FG Lng", "XPM", "2 Pt Pass", "2 Pt Run", 
+                           "2 Pt Rec", "FGM 0-19", "FGM 20-29", "FGM 30-39", "FGM 40-49", "FGM 50+", "OFF Snaps",
+                           "DEF Snaps", "ST Snaps"])
+for i2 in range(0, len(code2)):
+    currentItem2 = code2[i2]
+    rough_pd2.loc[i2] = [code2[i2]["Name"], code2[i2]["Position"], code2[i2]["PositionCategory"], code2[i2]["Team"], 
+                 code2[i2]["Played"], code2[i2]["PassingAttempts"], code2[i2]["PassingCompletions"], 
+                 code2[i2]["PassingYards"], code2[i2]["PassingTouchdowns"], code2[i2]["PassingInterceptions"],
+                 code2[i2]["PassingLong"], code2[i2]["RushingAttempts"], code2[i2]["RushingYards"], 
+                 code2[i2]["RushingTouchdowns"], code2[i2]["RushingLong"], code2[i2]["ReceivingTargets"],
+                 code2[i2]["Receptions"], code2[i2]["ReceivingYards"], code2[i2]["ReceivingTouchdowns"], 
+                 code2[i2]["ReceivingLong"], code2[i2]["FumblesLost"], code2[i2]["PuntReturns"],
+                 code2[i2]["PuntReturnYards"], code2[i2]["PuntReturnTouchdowns"], code2[i2]["PuntReturnLong"], 
+                 code2[i2]["KickReturns"], code2[i2]["KickReturnYards"], code2[i2]["KickReturnTouchdowns"],
+                 code2[i2]["KickReturnLong"], code2[i2]["SoloTackles"], code2[i2]["AssistedTackles"], 
+                 code2[i2]["TacklesForLoss"], code2[i2]["Sacks"], code2[i2]["QuarterbackHits"],
+                 code2[i2]["PassesDefended"], code2[i2]["FumblesForced"], code2[i2]["FumblesRecovered"],
+                 code2[i2]["FumbleReturnTouchdowns"], code2[i2]["Interceptions"], code2[i2]["InterceptionReturnYards"],
+                 code2[i2]["InterceptionReturnTouchdowns"], code2[i2]["Punts"], code2[i2]["PuntYards"], 
+                 code2[i2]["PuntLong"], code2[i2]["FieldGoalsAttempted"], code2[i2]["FieldGoalsMade"], 
+                 code2[i2]["FieldGoalsLongestMade"], code2[i2]["ExtraPointsMade"], 
+                 code2[i2]["TwoPointConversionPasses"], code2[i2]["TwoPointConversionRuns"], 
+                 code2[i2]["TwoPointConversionReceptions"], code2[i2]["FieldGoalsMade0to19"], 
+                 code2[i2]["FieldGoalsMade20to29"], code2[i2]["FieldGoalsMade30to39"], 
+                 code2[i2]["FieldGoalsMade40to49"], code2[i2]["FieldGoalsMade50Plus"], 
+                 code2[i2]["OffensiveSnapsPlayed"], code2[i2]["DefensiveSnapsPlayed"], 
+                 code2[i2]["SpecialTeamsSnapsPlayed"]]
+#return df
+
+### ROUNDS/CONVERTS ALL DATA TYPES ###
+rough_pd2.convert_dtypes().dtypes #converts data types
+
+rough_pd2["Pass Att"] = round(rough_pd2["Pass Att"]) #rounds for integers #Passing
+rough_pd2["Pass Cmp"] = round(rough_pd2["Pass Cmp"])
+rough_pd2["Pass Yds"] = round(rough_pd2["Pass Yds"])
+rough_pd2["Pass TDs"] = round(rough_pd2["Pass TDs"])
+rough_pd2["Pass INTs"] = round(rough_pd2["Pass INTs"])
+rough_pd2["Pass Lng"] = round(rough_pd2["Pass Lng"])
+
+rough_pd2["Rush Att"] = round(rough_pd2["Rush Att"]) #Rushing
+rough_pd2["Rush Yds"] = round(rough_pd2["Rush Yds"])
+rough_pd2["Rush TDs"] = round(rough_pd2["Rush TDs"])
+rough_pd2["Rush Lng"] = round(rough_pd2["Rush Lng"])
+
+rough_pd2["Rec Tgts"] = round(rough_pd2["Rec Tgts"]) #Receiving
+rough_pd2["Rec"] = round(rough_pd2["Rec"])
+rough_pd2["Rec Yds"] = round(rough_pd2["Rec Yds"])
+rough_pd2["Rec TDs"] = round(rough_pd2["Rec TDs"])
+rough_pd2["Rec Lng"] = round(rough_pd2["Rec Lng"])
+
+rough_pd2["Fumb"] = round(rough_pd2["Fumb"]) #Fumbles
+
+rough_pd2["Punt Ret"] = round(rough_pd2["Punt Ret"]) #Punt Returning
+rough_pd2["Punt Ret Yds"] = round(rough_pd2["Punt Ret Yds"])
+rough_pd2["Punt Ret TDs"] = round(rough_pd2["Punt Ret TDs"])
+rough_pd2["Punt Ret Lng"] = round(rough_pd2["Punt Ret Lng"])
+
+rough_pd2["Kick Ret"] = round(rough_pd2["Kick Ret"]) #Kick Returning
+rough_pd2["Kick Ret Yds"] = round(rough_pd2["Kick Ret Yds"])
+rough_pd2["Kick Ret TDs"] = round(rough_pd2["Kick Ret TDs"])
+rough_pd2["Kick Ret Lng"] = round(rough_pd2["Kick Ret Lng"])
+
+rough_pd2["Solo Tkls"] = round(rough_pd2["Solo Tkls"]) #Defense
+rough_pd2["Ass Tkls"] = round(rough_pd2["Ass Tkls"])
+rough_pd2["TFL"] = round(rough_pd2["TFL"])
+rough_pd2["Sacks"] = round(rough_pd2["Sacks"])
+rough_pd2["QB Hits"] = round(rough_pd2["QB Hits"])
+rough_pd2["PD"] = round(rough_pd2["PD"])
+rough_pd2["FF"] = round(rough_pd2["FF"])
+rough_pd2["FR"] = round(rough_pd2["FR"])
+rough_pd2["Fum Ret TDs"] = round(rough_pd2["Fum Ret TDs"])
+rough_pd2["Int"] = round(rough_pd2["Int"])
+rough_pd2["Int Ret Yds"] = round(rough_pd2["Int Ret Yds"])
+rough_pd2["Int Ret TDs"] = round(rough_pd2["Int Ret TDs"])
+
+rough_pd2["Punts"] = round(rough_pd2["Punts"]) #Punting
+rough_pd2["Punt Yds"] = round(rough_pd2["Punt Yds"])
+rough_pd2["Punt Lng"] = round(rough_pd2["Punt Lng"])
+
+rough_pd2["FGA"] = round(rough_pd2["FGA"]) #Kicking
+rough_pd2["FGM"] = round(rough_pd2["FGM"])
+rough_pd2["FG Lng"] = round(rough_pd2["FG Lng"])
+rough_pd2["XPM"] = round(rough_pd2["XPM"])
+
+rough_pd2["2 Pt Pass"] = round(rough_pd2["2 Pt Pass"]) #2pt
+rough_pd2["2 Pt Run"] = round(rough_pd2["2 Pt Run"])
+rough_pd2["2 Pt Rec"] = round(rough_pd2["2 Pt Rec"])
+
+rough_pd2["FGM 0-19"] = round(rough_pd2["FGM 0-19"]) #FG Distances
+rough_pd2["FGM 20-29"] = round(rough_pd2["FGM 20-29"])
+rough_pd2["FGM 30-39"] = round(rough_pd2["FGM 30-39"])
+rough_pd2["FGM 40-49"] = round(rough_pd2["FGM 40-49"])
+rough_pd2["FGM 50+"] = round(rough_pd2["FGM 50+"])
+
+rough_pd2["OFF Snaps"] = round(rough_pd2["OFF Snaps"]) #snaps
+rough_pd2["DEF Snaps"] = round(rough_pd2["DEF Snaps"])
+rough_pd2["ST Snaps"] = round(rough_pd2["ST Snaps"])
+
+rough_pd2 = rough_pd2.astype({"Pass Att": int, "Pass Cmp": int, "Pass Yds": int, "Pass TDs": int, "Pass INTs": int,
+                            "Pass Lng": int, "Rush Att": int, "Rush Yds": int, "Rush TDs": int, "Rush Lng": int,
+                            "Rec Tgts": int, "Rec": int, "Rec Yds": int, "Rec TDs": int, "Rec Lng": int, 
+                            "Fumb": int, "Punt Ret": int, "Punt Ret Yds": int, "Punt Ret TDs": int, 
+                            "Punt Ret Lng": int, "Kick Ret": int, "Kick Ret Yds": int, "Kick Ret TDs": int, 
+                            "Kick Ret Lng": int, "Solo Tkls": int, "Ass Tkls": int, "TFL": int, "Sacks": int, 
+                            "QB Hits": int, "PD": int, "FF": int, "FR": int, "Fum Ret TDs": int, "Int": int, 
+                            "Int Ret Yds": int, "Int Ret TDs": int, "Punts": int, "Punt Yds": int, 
+                            "Punt Lng": int, "FGA": int, "FGM": int, "FG Lng": int, "XPM": int, "2 Pt Pass": int,
+                            "2 Pt Run": int, "2 Pt Rec": int, "FGM 0-19": int, "FGM 20-29": int, 
+                            "FGM 30-39": int, "FGM 40-49": int, "FGM 50+": int, "OFF Snaps": int, 
+                            "DEF Snaps": int, "ST Snaps": int}) #int conversion
+
+### ADDITIONAL STATS ###
+rough_pd2['Comp%'] = round(((rough_pd2['Pass Cmp'] / rough_pd2['Pass Att'])*100),1) #simple added stats
+rough_pd2['Rush Avg'] = round((rough_pd2['Rush Yds'] / rough_pd2['Rush Att']),2)
+rough_pd2['Rec Yds/Tgt'] = round((rough_pd2['Rec Yds'] / rough_pd2['Rec Tgts']),1)
+rough_pd2['Rec Yds/Rec'] = round((rough_pd2['Rec Yds'] / rough_pd2['Rec']),1)
+rough_pd2['Punt Ret Avg'] = round((rough_pd2['Punt Ret Yds'] / rough_pd2['Punt Ret']),1)
+rough_pd2['Kick Ret Avg'] = round((rough_pd2['Kick Ret Yds'] / rough_pd2['Kick Ret']),1)
+rough_pd2['Tot Tkls'] = round(rough_pd2["Solo Tkls"] + rough_pd2["Ass Tkls"],0)
+rough_pd2['Punt Avg'] = round((rough_pd2['Punt Yds'] / rough_pd2['Punts']),1)
+rough_pd2['FG%'] = round(((rough_pd2['FGM'] / rough_pd2['FGA'])*100),1)
+                            
+rough_pd2['Pass Rat a'] = ((((rough_pd2['Pass Cmp'] / rough_pd2['Pass Att']) - .3)*5)) #passer rating calc
+rough_pd2.loc[rough_pd2['Pass Rat a'] > 2.375, 'Pass Rat a'] = 2.375
+rough_pd2.loc[rough_pd2['Pass Rat a'] < 0, 'Pass Rat a'] = 0
+
+rough_pd2['Pass Rat b'] = ((((rough_pd2['Pass Yds'] / rough_pd2['Pass Att']) - 3)*.25))
+rough_pd2.loc[rough_pd2['Pass Rat b'] > 2.375, 'Pass Rat b'] = 2.375
+rough_pd2.loc[rough_pd2['Pass Rat b'] < 0, 'Pass Rat b'] = 0
+
+rough_pd2['Pass Rat c'] = (((rough_pd2['Pass TDs'] / rough_pd2['Pass Att'])*20))
+rough_pd2.loc[rough_pd2['Pass Rat c'] > 2.375, 'Pass Rat c'] = 2.375
+rough_pd2.loc[rough_pd2['Pass Rat c'] < 0, 'Pass Rat c'] = 0
+
+rough_pd2['Pass Rat d'] = (2.375-((rough_pd2['Pass INTs'] / rough_pd2['Pass Att'])*25))
+rough_pd2.loc[rough_pd2['Pass Rat d'] > 2.375, 'Pass Rat d'] = 2.375
+rough_pd2.loc[rough_pd2['Pass Rat d'] < 0, 'Pass Rat d'] = 0
+
+rough_pd2['Pass Rat'] = round((((rough_pd2['Pass Rat a'] + rough_pd2['Pass Rat b'] + rough_pd2['Pass Rat c'] + 
+                        rough_pd2['Pass Rat d']) / 6) * 100),1) #final pass rat calculation 
+                  
+rough_pd2['Fan Pts (Non-PPR)1'] = ((rough_pd2["Pass TDs"]*4) + (rough_pd2["Pass Yds"]*.04) + (rough_pd2["Pass INTs"]*-2)
++ (rough_pd2["Rush TDs"]*6) + (rough_pd2["Rush Yds"]*.1) + (rough_pd2["Rec TDs"]*6) + (rough_pd2["Rec Yds"]*.1) + (rough_pd2["Rec"]*0)
++ (rough_pd2["Fumb"]*-2) + (rough_pd2["Punt Ret TDs"]*6) + (rough_pd2["Kick Ret TDs"]*6) + (rough_pd2["2 Pt Pass"]*2)
++ (rough_pd2["2 Pt Run"]*2) + (rough_pd2["2 Pt Rec"]*2) + (rough_pd2["FGM 0-19"]*3) + (rough_pd2["FGM 20-29"]*3) + (rough_pd2["FGM 30-39"]*3)
++ (rough_pd2["FGM 40-49"]*4) + (rough_pd2["FGM 50+"]*5) + (rough_pd2["XPM"]*1) + (rough_pd2["Solo Tkls"]*1) + (rough_pd2["Ass Tkls"]*.5)
++ (rough_pd2["TFL"]*1) + (rough_pd2["Sacks"]*2) + (rough_pd2["QB Hits"]*1) + (rough_pd2["PD"]*1) + (rough_pd2["FF"]*3) + (rough_pd2["FR"]*3)
++ (rough_pd2["Fum Ret TDs"]*6) + (rough_pd2["Int Ret TDs"]*6) + (rough_pd2["Int"]*3)) #fantasy points calc
+
+rough_pd2['Fan Pts (PPR)1'] = ((rough_pd2["Pass TDs"]*4) + (rough_pd2["Pass Yds"]*.04) + (rough_pd2["Pass INTs"]*-2)
++ (rough_pd2["Rush TDs"]*6) + (rough_pd2["Rush Yds"]*.1) + (rough_pd2["Rec TDs"]*6) + (rough_pd2["Rec Yds"]*.1) + (rough_pd2["Rec"]*1)
++ (rough_pd2["Fumb"]*-2) + (rough_pd2["Punt Ret TDs"]*6) + (rough_pd2["Kick Ret TDs"]*6) + (rough_pd2["2 Pt Pass"]*2)
++ (rough_pd2["2 Pt Run"]*2) + (rough_pd2["2 Pt Rec"]*2) + (rough_pd2["FGM 0-19"]*3) + (rough_pd2["FGM 20-29"]*3) + (rough_pd2["FGM 30-39"]*3)
++ (rough_pd2["FGM 40-49"]*4) + (rough_pd2["FGM 50+"]*5) + (rough_pd2["XPM"]*1) + (rough_pd2["Solo Tkls"]*1) + (rough_pd2["Ass Tkls"]*.5)
++ (rough_pd2["TFL"]*1) + (rough_pd2["Sacks"]*2) + (rough_pd2["QB Hits"]*1) + (rough_pd2["PD"]*1) + (rough_pd2["FF"]*3) + (rough_pd2["FR"]*3)
++ (rough_pd2["Fum Ret TDs"]*6) + (rough_pd2["Int Ret TDs"]*6) + (rough_pd2["Int"]*3)) #fantasy points calc
+
+rough_pd2['Fan Pts Avg1'] = (((rough_pd2["Pass TDs"]*4) + (rough_pd2["Pass Yds"]*.04) + (rough_pd2["Pass INTs"]*-2)
++ (rough_pd2["Rush TDs"]*6) + (rough_pd2["Rush Yds"]*.1) + (rough_pd2["Rec TDs"]*6) + (rough_pd2["Rec Yds"]*.1) + (rough_pd2["Rec"]*.5)
++ (rough_pd2["Fumb"]*-2) + (rough_pd2["Punt Ret TDs"]*6) + (rough_pd2["Kick Ret TDs"]*6) + (rough_pd2["2 Pt Pass"]*2)
++ (rough_pd2["2 Pt Run"]*2) + (rough_pd2["2 Pt Rec"]*2) + (rough_pd2["FGM 0-19"]*3) + (rough_pd2["FGM 20-29"]*3) + (rough_pd2["FGM 30-39"]*3)
++ (rough_pd2["FGM 40-49"]*4) + (rough_pd2["FGM 50+"]*5) + (rough_pd2["XPM"]*1) + (rough_pd2["Solo Tkls"]*1) + (rough_pd2["Ass Tkls"]*.5)
++ (rough_pd2["TFL"]*1) + (rough_pd2["Sacks"]*2) + (rough_pd2["QB Hits"]*1) + (rough_pd2["PD"]*1) + (rough_pd2["FF"]*3) + (rough_pd2["FR"]*3)
++ (rough_pd2["Fum Ret TDs"]*6) + (rough_pd2["Int Ret TDs"]*6) + (rough_pd2["Int"]*3))/rough_pd2['Starts']) #fantasy points calc
+
+rough_pd2['Fan Pts (Non-PPR)'] = round(rough_pd2['Fan Pts (Non-PPR)1'],1) #more additional stat calcs
+rough_pd2['Fan Pts (PPR)'] = round(rough_pd2['Fan Pts (PPR)1'],1)
+rough_pd2['Fan Pts Avg'] = round(rough_pd2['Fan Pts Avg1'],1)
+rough_pd2['2pt Conv'] = (rough_pd2["2 Pt Pass"] + rough_pd2["2 Pt Run"] + rough_pd2["2 Pt Rec"])
+rough_pd2['Tot TDs'] = (rough_pd2["Pass TDs"] + rough_pd2["Rush TDs"] + rough_pd2["Rec TDs"] + rough_pd2["Punt Ret TDs"]
+                     + rough_pd2["Kick Ret TDs"] + rough_pd2["Fum Ret TDs"] + rough_pd2["Int Ret TDs"])
+rough_pd2['Tot Snaps'] = rough_pd2["OFF Snaps"] + rough_pd2["DEF Snaps"] + rough_pd2["ST Snaps"] 
+rough_pd2['Ret TDs'] = rough_pd2["Kick Ret TDs"] + rough_pd2["Punt Ret TDs"] 
+rough_pd2['Def TDs'] = rough_pd2["Fum Ret TDs"] + rough_pd2["Int Ret TDs"]
+rough_pd2['ref'] = range(0, 0+len(rough_pd2))
+
+##### PLAYER STATS #####
+### QUARTERBACKS ###
+quarterback_pdfilter2 = rough_pd2[rough_pd2["Pos"] == "QB"]
+quarterback_pd2 = quarterback_pdfilter2.iloc[:,[0,1,3,4,5,6,59,7,8,9,10,72,12,13,80,79,56,77,78]]
+qb_pd2 = quarterback_pd2.sort_values(by=['Fan Pts Avg'], ascending=False)
+    
+### RUNNING BACKS ###
+runningback_pdfilter2 = rough_pd2[rough_pd2["Pos"] == "RB"]
+runningback_pd2 = runningback_pdfilter2.iloc[:,[0,1,3,4,11,12,60,13,14,16,17,18,20,80,79,56,77,78]]
+rb_pd2 = runningback_pd2.sort_values(by=['Fan Pts Avg'], ascending=False)
+
+### FULL BACKS ###
+fullback_pdfilter2 = rough_pd2[rough_pd2["Pos"] == "FB"]
+fullback_pd2 = fullback_pdfilter2.iloc[:,[0,1,3,4,11,12,60,13,14,16,17,18,20,80,79,56,77,78]]
+fb_pd2 = fullback_pd2.sort_values(by=['Fan Pts Avg'], ascending=False)
+
+### WIDE RECEIVERS ###
+widereceiver_pdfilter2 = rough_pd2[rough_pd2["Pos"] == "WR"]
+widereceiver_pd2 = widereceiver_pdfilter2.iloc[:,[0,1,3,4,15,61,16,62,17,18,19,20,12,13,80,79,56,77,78]]
+wr_pd2 = widereceiver_pd2.sort_values(by=['Fan Pts Avg'], ascending=False)
+
+### TIGHT ENDS ###
+tightend_pdfilter2 = rough_pd2[rough_pd2["Pos"] == "TE"]
+tightend_pd2 = tightend_pdfilter2.iloc[:,[0,1,3,4,15,61,16,62,17,18,19,20,12,13,80,79,56,77,78]]
+te_pd2 = tightend_pd2.sort_values(by=['Fan Pts Avg'], ascending=False)
+
+### OFFENSIVE TACKLES ###
+offensivetackle_pdfilter2 = rough_pd2[rough_pd2["Pos"] == "OT"]
+offensivetackle_pd2 = offensivetackle_pdfilter2.iloc[:,[0,1,3,4,15,16,36,80,79,56,77,78]]
+ot_pd2 = offensivetackle_pd2.sort_values(by=['OFF Snaps'], ascending=False)
+
+### OFFENSIVE GUARDS ###
+offensiveguard_pdfilter2 = rough_pd2[rough_pd2["Pos"] == "G"]
+offensiveguard_pd2 = offensiveguard_pdfilter2.iloc[:,[0,1,3,4,15,16,36,80,79,56,77,78]]
+og_pd2 = offensiveguard_pd2.sort_values(by=['OFF Snaps'], ascending=False)
+
+### CENTERS ###
+center_pdfilter2 = rough_pd2[rough_pd2["Pos"] == "C"]
+center_pd2 = center_pdfilter2.iloc[:,[0,1,3,4,15,16,36,80,79,56,77,78]]
+c_pd2 = center_pd2.sort_values(by=['OFF Snaps'], ascending=False)
+
+### OFFENSIVE LINE ###
+offensiveline_pdfilter2 = rough_pd2[(rough_pd2["Pos"] == "OT") | (rough_pd2["Pos"] == "G") | (rough_pd2["Pos"] == "C")]
+offensiveline_pd2 = offensiveline_pdfilter2.iloc[:,[0,1,3,4,15,16,36,80,79,56,77,78]]
+ol_pd2 = offensiveline_pd2.sort_values(by=['OFF Snaps'], ascending=False)
+
+### DEFENSIVE END ###
+defensiveend_pdfilter2 = rough_pd2[rough_pd2["Pos"] == "DE"]
+defensiveend_pd2 = defensiveend_pdfilter2.iloc[:,[0,1,3,4,29,30,65,31,32,33,34,35,36,37,38,39,40,80,57,77,78]]
+de_pd2 = defensiveend_pd2.sort_values(by=['Fan Pts Avg'], ascending=False)
+
+### DEFENSIVE TACKLE ###
+defensivetackle_pdfilter2 = rough_pd2[rough_pd2["Pos"] == "DT"]
+defensivetackle_pd2 = defensivetackle_pdfilter2.iloc[:,[0,1,3,4,29,30,65,31,32,33,34,35,36,37,38,39,40,80,57,77,78]]
+dt_pd2 = defensivetackle_pd2.sort_values(by=['Fan Pts Avg'], ascending=False)
+
+### NOSE TACKLE ###
+nosetackle_pdfilter2 = rough_pd2[rough_pd2["Pos"] == "NT"]
+nosetackle_pd2 = nosetackle_pdfilter2.iloc[:,[0,1,3,4,29,30,65,31,32,33,34,35,36,37,38,39,40,80,57,77,78]]
+nt_pd2 = nosetackle_pd2.sort_values(by=['Fan Pts Avg'], ascending=False)
+
+### DEFENSIVE LINE ###
+defensiveline_pdfilter2 = rough_pd2[(rough_pd2["Pos"] == "DE") | (rough_pd2["Pos"] == "DT") | (rough_pd2["Pos"] == "NT")]
+defensiveline_pd2 = defensiveline_pdfilter2.iloc[:,[0,1,3,4,29,30,65,31,32,33,34,35,36,37,38,39,40,80,57,77,78]]
+dl_pd2 = defensiveline_pd2.sort_values(by=['Fan Pts Avg'], ascending=False)
+
+### OUTSIDE LINEBACKER ###
+outsidelinebacker_pdfilter2 = rough_pd2[rough_pd2["Pos"] == "OLB"]
+outsidelinebacker_pd2 = outsidelinebacker_pdfilter2.iloc[:,[0,1,3,4,29,30,65,31,32,33,34,35,36,37,38,39,40,80,57,77,78]]
+olb_pd2 = outsidelinebacker_pd2.sort_values(by=['Fan Pts Avg'], ascending=False)
+
+### INSIDE LINEBACKER ###
+insidelinebacker_pdfilter2 = rough_pd2[rough_pd2["Pos"] == "ILB"]
+insidelinebacker_pd2 = insidelinebacker_pdfilter2.iloc[:,[0,1,3,4,29,30,65,31,32,33,34,35,36,37,38,39,40,80,57,77,78]]
+ilb_pd2 = insidelinebacker_pd2.sort_values(by=['Fan Pts Avg'], ascending=False)
+
+### LINEBACKER ###
+linebacker_pdfilter2 = rough_pd2[(rough_pd2["Pos"] == "OLB") | (rough_pd2["Pos"] == "ILB") | (rough_pd2["Pos"] == "LB")]
+linebacker_pd2 = linebacker_pdfilter2.iloc[:,[0,1,3,4,29,30,65,31,32,33,34,35,36,37,38,39,40,80,57,77,78]]
+lb_pd2 = linebacker_pd2.sort_values(by=['Fan Pts Avg'], ascending=False)
+
+### CORNERBACK ### 
+cornerback_pdfilter2 = rough_pd2[rough_pd2["Pos"] == "CB"]
+cornerback_pd2 = cornerback_pdfilter2.iloc[:,[0,1,3,4,29,30,65,31,32,33,34,35,36,37,38,39,40,80,57,77,78]]
+cb_pd2 = cornerback_pd2.sort_values(by=['Fan Pts Avg'], ascending=False)
+
+### STRONG SAFETY ###
+strongsafety_pdfilter2 = rough_pd2[rough_pd2["Pos"] == "SS"]
+strongsafety_pd2 = strongsafety_pdfilter2.iloc[:,[0,1,3,4,29,30,65,31,32,33,34,35,36,37,38,39,40,80,57,77,78]]
+ss_pd2 = strongsafety_pd2.sort_values(by=['Fan Pts Avg'], ascending=False)
+
+### FREE SAFETY ### 
+freesafety_pdfilter2 = rough_pd2[rough_pd2["Pos"] == "FS"]
+freesafety_pd2 = freesafety_pdfilter2.iloc[:,[0,1,3,4,29,30,65,31,32,33,34,35,36,37,38,39,40,80,57,77,78]]
+fs_pd2 = freesafety_pd2.sort_values(by=['Fan Pts Avg'], ascending=False)
+
+### SECONDARY ###
+secondary_pdfilter2 = rough_pd2[(rough_pd2["Pos"] == "CB") | (rough_pd2["Pos"] == "SS") | (rough_pd2["Pos"] == "FS")]
+secondary_pd2 = secondary_pdfilter2.iloc[:,[0,1,3,4,29,30,65,31,32,33,34,35,36,37,38,39,40,80,57,77,78]]
+sec_pd2 = secondary_pd2.sort_values(by=['Fan Pts Avg'], ascending=False)
+
+### KICKER ###
+kicker_pdfilter2 = rough_pd2[rough_pd2["Pos"] == "K"]
+kicker_pd2 = kicker_pdfilter2.iloc[:,[0,1,3,4,44,45,67,46,51,52,53,54,55,47,80,58,77,78]]
+k_pd2 = kicker_pd2.sort_values(by=['Fan Pts (PPR)'], ascending=False)
+
+### PUNTER ###
+punter_pdfilter2 = rough_pd2[rough_pd2["Pos"] == "P"]
+punter_pd2 = punter_pdfilter2.iloc[:,[0,1,3,4,41,42,66,43,80,58,77,78]]
+p_pd2 = punter_pd2.sort_values(by=['Punt Avg'], ascending=False)
+
+### LONG SNAPPER ###
+longsnapper_pdfilter2 = rough_pd2[rough_pd2["Pos"] == "LS"]
+longsnapper_pd2 = longsnapper_pdfilter2.iloc[:,[0,1,3,4,80,58,77,78]]
+ls_pd2 = longsnapper_pd2.sort_values(by=['ST Snaps'], ascending=False)
+
+##### LEAGUE LEADERS #####
+### MINIMUMS ###
+weeks2021 = 18
+weeks2022 = 14
+passatt_min = 15/2
+rushatt_min = 10/2
+recatt_min = 5/2
+puntatt_min = 5/2
+fgatt_min = 3/2
+puntretatt_min = 1.5/1
+kickretatt_min = 1.5/1
+
+#### PASSING ####
+### PASSING YARDS ###
+passyds2_filter = rough_pd2.sort_values(by=['Pass Yds'], ascending=False)
+passyds2_fil = passyds2_filter.iloc[:,[0,1,3,7]]
+passyds2 = passyds2_fil.head(10)
+
+### PASSING TDS ###
+passtds2_filter = rough_pd2.sort_values(by=['Pass TDs'], ascending=False)
+passtds2_fil = passtds2_filter.iloc[:,[0,1,3,8]]
+passtds2 = passtds2_fil.head(10)
+
+### PASSING INTS ###
+passints2_filter = rough_pd2.sort_values(by=['Pass INTs'], ascending=False)
+passints2_fil = passints2_filter.iloc[:,[0,1,3,9]]
+passints2 = passints2_fil.head(10)
+
+### PASSER RATING ###
+passrat2_filter = rough_pd2.sort_values(by=['Pass Rat'], ascending=False)
+passrat2_filt = passrat2_filter[passrat2_filter["Pass Att"] >= (weeks2022*passatt_min)] #Min att
+passrat2_fil = passrat2_filt.iloc[:,[0,1,3,72]]
+passrat2 = passrat2_fil.head(10)
+
+### COMPLETION % ###
+compperc2_filter = rough_pd2.sort_values(by=['Comp%'], ascending=False)
+compperc2_filt = compperc2_filter[compperc2_filter["Pass Att"] >= (weeks2022*passatt_min)] #Min att
+compperc2_fil = compperc2_filt.iloc[:,[0,1,3,59]]
+compperc2 = compperc2_fil.head(10)
+
+### PASSING LONG ###
+passlong2_filter = rough_pd2.sort_values(by=['Pass Lng'], ascending=False)
+passlong2_fil = passlong2_filter.iloc[:,[0,1,3,10]]
+passlong2 = passlong2_fil.head(10)
+
+### QB FAN PTS ###
+qbfanpts2_filter = rough_pd2.sort_values(by=['Fan Pts Avg'], ascending=False)
+qbfanpts2_filt = qbfanpts2_filter[qbfanpts2_filter["Pos"] == "QB"]
+qbfanpts2_fil = qbfanpts2_filt.iloc[:,[0,1,3,78]]
+qbfanpts2 = qbfanpts2_fil.head(10)
+
+#### RUSHING ####
+### RUSHING YARDS ###
+rushyds2_filter = rough_pd2.sort_values(by=['Rush Yds'], ascending=False)
+rushyds2_fil = rushyds2_filter.iloc[:,[0,1,3,12]]
+rushyds2 = rushyds2_fil.head(10)
+
+### RUSHING TDS ###
+rushtds2_filter = rough_pd2.sort_values(by=['Rush TDs'], ascending=False)
+rushtds2_fil = rushtds2_filter.iloc[:,[0,1,3,13]]
+rushtds2 = rushtds2_fil.head(10)
+
+### RUSHING AVG ###
+rushavg2_filter = rough_pd2.sort_values(by=['Rush Avg'], ascending=False)
+rushavg2_filte = rushavg2_filter[rushavg2_filter["Pos"] == "RB"]
+rushavg2_filt = rushavg2_filte[rushavg2_filte["Rush Att"] >= (weeks2022*rushatt_min)] #Min att
+rushavg2_fil = rushavg2_filt.iloc[:,[0,1,3,60]]
+rushavg2 = rushavg2_fil.head(10)
+
+### RUSHING LONG ###
+rushlong2_filter = rough_pd2.sort_values(by=['Rush Lng'], ascending=False)
+rushlong2_fil = rushlong2_filter.iloc[:,[0,1,3,14]]
+rushlong2 = rushlong2_fil.head(10)
+
+### RB FAN PTS
+rbfanpts2_filter = rough_pd2.sort_values(by=['Fan Pts Avg'], ascending=False)
+rbfanpts2_filt = rbfanpts2_filter[rbfanpts2_filter["Pos"] == "RB"]
+rbfanpts2_fil = rbfanpts2_filt.iloc[:,[0,1,3,78]]
+rbfanpts2 = rbfanpts2_fil.head(10)
+
+
+#### RECEIVING ####
+### RECEPTIONS ###
+rec2_filter = rough_pd2.sort_values(by=['Rec'], ascending=False)
+rec2_fil = rec2_filter.iloc[:,[0,1,3,16]]
+rec2 = rec2_fil.head(10)
+
+### RECEIVING YDS ###
+recyds2_filter = rough_pd2.sort_values(by=['Rec Yds'], ascending=False)
+recyds2_fil = recyds2_filter.iloc[:,[0,1,3,17]]
+recyds2 = recyds2_fil.head(10)
+
+### RECEIVING TDS ###
+rectds2_filter = rough_pd2.sort_values(by=['Rec TDs'], ascending=False)
+rectds2_fil = rectds2_filter.iloc[:,[0,1,3,18]]
+rectds2 = rectds2_fil.head(10)
+
+### RECEIVING YDS/TGT ###
+recydstgt2_filter = rough_pd2.sort_values(by=['Rec Yds/Tgt'], ascending=False)
+recydstgt2_filt = recydstgt2_filter[recydstgt2_filter["Rec Tgts"] >= (weeks2022*recatt_min)] #Min att
+recydstgt2_fil = recydstgt2_filt.iloc[:,[0,1,3,61]]
+recydstgt2 = recydstgt2_fil.head(10)
+
+### RECEIVING LONG ###
+reclng2_filter = rough_pd2.sort_values(by=['Rec Lng'], ascending=False)
+reclng2_fil = reclng2_filter.iloc[:,[0,1,3,19]]
+reclng2 = reclng2_fil.head(10)
+
+### WR/TE FAN PTS ###
+wrtefanpts2_filter = rough_pd2.sort_values(by=['Fan Pts Avg'], ascending=False)
+wrtefanpts2_filt = wrtefanpts2_filter[(wrtefanpts2_filter["Pos"] == "WR") | (wrtefanpts2_filter["Pos"] == "TE")]
+wrtefanpts2_fil = wrtefanpts2_filt.iloc[:,[0,1,3,78]]
+wrtefanpts2 = wrtefanpts2_fil.head(10)
+
+
+#### DEFENSIVE ####
+### SOLO TACKLES ###
+solotkls2_filter = rough_pd2.sort_values(by=['Solo Tkls'], ascending=False)
+solotkls2_fil = solotkls2_filter.iloc[:,[0,1,3,29]]
+solotkls2 = solotkls2_fil.head(10)
+
+### TOTAL TACKLES ###
+tottkls2_filter = rough_pd2.sort_values(by=['Tot Tkls'], ascending=False)
+tottkls2_fil = tottkls2_filter.iloc[:,[0,1,3,65]]
+tottkls2 = tottkls2_fil.head(10)
+
+### TACKLES FOR LOSS ###
+tfl2_filter = rough_pd2.sort_values(by=['TFL'], ascending=False)
+tfl2_fil = tfl2_filter.iloc[:,[0,1,3,31]]
+tfl2 = tfl2_fil.head(10)
+
+### SACKS ###
+sacks2_filter = rough_pd2.sort_values(by=['Sacks'], ascending=False)
+sacks2_fil = sacks2_filter.iloc[:,[0,1,3,32]]
+sacks2 = sacks2_fil.head(10)
+
+### QB HITS ###
+qbhits2_filter = rough_pd2.sort_values(by=['QB Hits'], ascending=False)
+qbhits2_fil = qbhits2_filter.iloc[:,[0,1,3,33]]
+qbhits2 = qbhits2_fil.head(10)
+
+### PASSES DEFENDED ###
+pdef2_filter = rough_pd2.sort_values(by=['PD'], ascending=False)
+pdef2_fil = pdef2_filter.iloc[:,[0,1,3,34]]
+pdef2 = pdef2_fil.head(10)
+
+### FORCED FUMBLES ###
+ff2_filter = rough_pd2.sort_values(by=['FF'], ascending=False)
+ff2_fil = ff2_filter.iloc[:,[0,1,3,35]]
+ff2 = ff2_fil.head(10)
+
+### FUMBLE RECOVERIES ###
+fr2_filter = rough_pd2.sort_values(by=['FR'], ascending=False)
+fr2_filt = fr2_filter[fr2_filter["Unit"] == "DEF"]
+fr2_fil = fr2_filt.iloc[:,[0,1,3,36]]
+fr2 = fr2_fil.head(10)
+
+### INTERCEPTIONS ###
+ints2_filter = rough_pd2.sort_values(by=['Int'], ascending=False)
+ints2_fil = ints2_filter.iloc[:,[0,1,3,38]]
+ints2 = ints2_fil.head(10)
+
+### DEFENSIVE TDS ###
+deftds2_filter = rough_pd2.sort_values(by=['Def TDs'], ascending=False)
+deftds2_fil = deftds2_filter.iloc[:,[0,1,3,83]]
+deftds2 = deftds2_fil.head(10)
+
+### DEF FAN PTS ###
+deffanpts2_filter = rough_pd2.sort_values(by=['Fan Pts Avg'], ascending=False)
+deffanpts2_filt = deffanpts2_filter[deffanpts2_filter["Unit"] == "DEF"]
+deffanpts2_fil = deffanpts2_filt.iloc[:,[0,1,3,78]]
+deffanpts2 = deffanpts2_fil.head(10)
+
+#### PUNTING ####
+### PUNTS YDS ###
+puntyds2_filter = rough_pd2.sort_values(by=['Punt Yds'], ascending=False)
+puntyds2_fil = puntyds2_filter.iloc[:,[0,1,3,42]]
+puntyds2 = puntyds2_fil.head(10)
+
+### PUNT AVG ###
+puntavg2_filter = rough_pd2.sort_values(by=['Punt Avg'], ascending=False)
+puntavg2_filt = puntavg2_filter[puntavg2_filter["Punts"] >= (weeks2022*puntatt_min)] #Min att
+puntavg2_fil = puntavg2_filt.iloc[:,[0,1,3,66]]
+puntavg2 = puntavg2_fil.head(10)
+
+### PUNT LONG ###
+puntlong2_filter = rough_pd2.sort_values(by=['Punt Lng'], ascending=False)
+puntlong2_fil = puntlong2_filter.iloc[:,[0,1,3,43]]
+puntlong2 = puntlong2_fil.head(10)
+
+#### KICKING ####
+### XPM ###
+xpm2_filter = rough_pd2.sort_values(by=['XPM'], ascending=False)
+xpm2_fil = xpm2_filter.iloc[:,[0,1,3,47]]
+xpm2 = xpm2_fil.head(10)
+
+### FGM ###
+fgm2_filter = rough_pd2.sort_values(by=['FGM'], ascending=False)
+fgm2_fil = fgm2_filter.iloc[:,[0,1,3,45]]
+fgm2 = fgm2_fil.head(10)
+
+### FG % ###
+fgperc2_filter = rough_pd2.sort_values(by=['FG%'], ascending=False)
+fgperc2_filt = fgperc2_filter[fgperc2_filter["FGA"] >= (weeks2022*fgatt_min)] #Min att
+fgperc2_fil = fgperc2_filt.iloc[:,[0,1,3,67]]
+fgperc2 = fgperc2_fil.head(10)
+
+### FG LONG ###
+fglong2_filter = rough_pd2.sort_values(by=['FG Lng'], ascending=False)
+fglong2_fil = fglong2_filter.iloc[:,[0,1,3,46]]
+fglong2 = fglong2_fil.head(10)
+
+### FGM 50+ ###
+fgm502_filter = rough_pd2.sort_values(by=['FGM 50+'], ascending=False)
+fgm502_fil = fgm502_filter.iloc[:,[0,1,3,55]]
+fgm502 = fgm502_fil.head(10)
+
+### K FAN PTS ###
+kfanpts2_filter = rough_pd2.sort_values(by=['Fan Pts Avg'], ascending=False)
+kfanpts2_filt = kfanpts2_filter[kfanpts2_filter["Pos"] == "K"]
+kfanpts2_fil = kfanpts2_filt.iloc[:,[0,1,3,78]]
+kfanpts2 = kfanpts2_fil.head(10)
+
+
+#### RETURNING ####
+### PUNT RET YDS ###
+puntretyds2_filter = rough_pd2.sort_values(by=['Punt Ret Yds'], ascending=False)
+puntretyds2_fil = puntretyds2_filter.iloc[:,[0,1,3,22]]
+puntretyds2 = puntretyds2_fil.head(10)
+
+### PUNT RET AVG ###
+puntretavg2_filter = rough_pd2.sort_values(by=['Punt Ret Avg'], ascending=False)
+puntretavg2_filt = puntretavg2_filter[puntretavg2_filter["Punt Ret"] >= (weeks2022*puntretatt_min)] #Min att
+puntretavg2_fil = puntretavg2_filt.iloc[:,[0,1,3,63]]
+puntretavg2 = puntretavg2_fil.head(10)
+
+### PUNT RET TDS ###
+puntrettds2_filter = rough_pd2.sort_values(by=['Punt Ret TDs'], ascending=False)
+puntrettds2_fil = puntrettds2_filter.iloc[:,[0,1,3,23]]
+puntrettds2 = puntrettds2_fil.head(10)
+
+### KICK RET YDS ###
+kickretyds2_filter = rough_pd2.sort_values(by=['Kick Ret Yds'], ascending=False)
+kickretyds2_fil = kickretyds2_filter.iloc[:,[0,1,3,26]]
+kickretyds2 = kickretyds2_fil.head(10)
+
+### KICK RET AVG ###
+kickretavg2_filter = rough_pd2.sort_values(by=['Kick Ret Avg'], ascending=False)
+kickretavg2_filt = kickretavg2_filter[kickretavg2_filter["Kick Ret"] >= (weeks2022*kickretatt_min)] #Min att
+kickretavg2_fil = kickretavg2_filt.iloc[:,[0,1,3,64]]
+kickretavg2 = kickretavg2_fil.head(10)
+
+### KICK RET TDS ###
+kickrettds2_filter = rough_pd2.sort_values(by=['Kick Ret TDs'], ascending=False)
+kickrettds2_fil = kickrettds2_filter.iloc[:,[0,1,3,27]]
+kickrettds2 = kickrettds2_fil.head(10)
+
+### RET TDS ###
+rettds2_filter = rough_pd2.sort_values(by=['Ret TDs'], ascending=False)
+rettds2_fil = rettds2_filter.iloc[:,[0,1,3,82]]
+rettds2 = rettds2_fil.head(10)
+
+#### MISCELLANEOUS ####
+### FUMBLES LOST ###
+fumblost2_filter = rough_pd2.sort_values(by=['Fumb'], ascending=False)
+fumblost2_fil = fumblost2_filter.iloc[:,[0,1,3,20]]
+fumblost2 = fumblost2_fil.head(10)
+
+### 2 PT CONV ###
+twopt2_filter = rough_pd2.sort_values(by=['2pt Conv'], ascending=False)
+twopt2_fil = twopt2_filter.iloc[:,[0,1,3,79]]
+twopt2 = twopt2_fil.head(10)
+
+### SNAPS ###
+snaps2_filter = rough_pd2.sort_values(by=['Tot Snaps'], ascending=False)
+snaps2_fil = snaps2_filter.iloc[:,[0,1,3,81]]
+snaps2 = snaps2_fil.head(10)
+
+
+############### 2021 ###############
+### GETS WEB API AND CONVERTS TO JSON ###
+#def get_api():
+key = 'e69104dd27724727b0812310bcdf8624'
+endpoint = 'https://api.sportsdata.io/v3/nfl/stats/json/PlayerSeasonStats/'
+season = '2021'
+headers = {'season' : season, 'key' : key}
+url = (f'https://api.sportsdata.io/v3/nfl/stats/json/PlayerSeasonStats/{season}?key={key}')
+response = requests.get(url,headers=headers) 
+response.raise_for_status()
+code = response.json()
+#return code
+
+### CONVERTS JSON TO PANDA ###
+#def panda_convert():
+pd.set_option('display.max_columns', None)
+pd.set_option('display.max_rows', None)
+rough_pd = pd.DataFrame(columns=['Name', 'Pos', 'Unit', 'Team', 'Starts', "Pass Att", "Pass Cmp", "Pass Yds", 
+                           "Pass TDs", "Pass INTs", "Pass Lng", "Rush Att", "Rush Yds", "Rush TDs", "Rush Lng",
+                           "Rec Tgts", "Rec", "Rec Yds", "Rec TDs", "Rec Lng", "Fumb", "Punt Ret", 
+                           "Punt Ret Yds", "Punt Ret TDs", "Punt Ret Lng", "Kick Ret", "Kick Ret Yds", 
+                           "Kick Ret TDs", "Kick Ret Lng", "Solo Tkls", "Ass Tkls", "TFL", "Sacks", "QB Hits", 
+                           "PD", "FF", "FR", "Fum Ret TDs", "Int", "Int Ret Yds", "Int Ret TDs", "Punts", 
+                           "Punt Yds", "Punt Lng", "FGA", "FGM", "FG Lng", "XPM", "2 Pt Pass", "2 Pt Run", 
+                           "2 Pt Rec", "FGM 0-19", "FGM 20-29", "FGM 30-39", "FGM 40-49", "FGM 50+", "OFF Snaps",
+                           "DEF Snaps", "ST Snaps"])
+for i in range(0, len(code)):
+    currentItem = code[i]
+    rough_pd.loc[i] = [code[i]["Name"], code[i]["Position"], code[i]["PositionCategory"], code[i]["Team"], 
+                 code[i]["Played"], code[i]["PassingAttempts"], code[i]["PassingCompletions"], 
+                 code[i]["PassingYards"], code[i]["PassingTouchdowns"], code[i]["PassingInterceptions"],
+                 code[i]["PassingLong"], code[i]["RushingAttempts"], code[i]["RushingYards"], 
+                 code[i]["RushingTouchdowns"], code[i]["RushingLong"], code[i]["ReceivingTargets"],
+                 code[i]["Receptions"], code[i]["ReceivingYards"], code[i]["ReceivingTouchdowns"], 
+                 code[i]["ReceivingLong"], code[i]["FumblesLost"], code[i]["PuntReturns"],
+                 code[i]["PuntReturnYards"], code[i]["PuntReturnTouchdowns"], code[i]["PuntReturnLong"], 
+                 code[i]["KickReturns"], code[i]["KickReturnYards"], code[i]["KickReturnTouchdowns"],
+                 code[i]["KickReturnLong"], code[i]["SoloTackles"], code[i]["AssistedTackles"], 
+                 code[i]["TacklesForLoss"], code[i]["Sacks"], code[i]["QuarterbackHits"],
+                 code[i]["PassesDefended"], code[i]["FumblesForced"], code[i]["FumblesRecovered"],
+                 code[i]["FumbleReturnTouchdowns"], code[i]["Interceptions"], code[i]["InterceptionReturnYards"],
+                 code[i]["InterceptionReturnTouchdowns"], code[i]["Punts"], code[i]["PuntYards"], 
+                 code[i]["PuntLong"], code[i]["FieldGoalsAttempted"], code[i]["FieldGoalsMade"], 
+                 code[i]["FieldGoalsLongestMade"], code[i]["ExtraPointsMade"], 
+                 code[i]["TwoPointConversionPasses"], code[i]["TwoPointConversionRuns"], 
+                 code[i]["TwoPointConversionReceptions"], code[i]["FieldGoalsMade0to19"], 
+                 code[i]["FieldGoalsMade20to29"], code[i]["FieldGoalsMade30to39"], 
+                 code[i]["FieldGoalsMade40to49"], code[i]["FieldGoalsMade50Plus"], 
+                 code[i]["OffensiveSnapsPlayed"], code[i]["DefensiveSnapsPlayed"], 
+                 code[i]["SpecialTeamsSnapsPlayed"]]
+#return df
+
+### ROUNDS/CONVERTS ALL DATA TYPES ###
+rough_pd.convert_dtypes().dtypes #converts data types
+
+rough_pd["Pass Att"] = round(rough_pd["Pass Att"]) #rounds for integers #Passing
+rough_pd["Pass Cmp"] = round(rough_pd["Pass Cmp"])
+rough_pd["Pass Yds"] = round(rough_pd["Pass Yds"])
+rough_pd["Pass TDs"] = round(rough_pd["Pass TDs"])
+rough_pd["Pass INTs"] = round(rough_pd["Pass INTs"])
+rough_pd["Pass Lng"] = round(rough_pd["Pass Lng"])
+
+rough_pd["Rush Att"] = round(rough_pd["Rush Att"]) #Rushing
+rough_pd["Rush Yds"] = round(rough_pd["Rush Yds"])
+rough_pd["Rush TDs"] = round(rough_pd["Rush TDs"])
+rough_pd["Rush Lng"] = round(rough_pd["Rush Lng"])
+
+rough_pd["Rec Tgts"] = round(rough_pd["Rec Tgts"]) #Receiving
+rough_pd["Rec"] = round(rough_pd["Rec"])
+rough_pd["Rec Yds"] = round(rough_pd["Rec Yds"])
+rough_pd["Rec TDs"] = round(rough_pd["Rec TDs"])
+rough_pd["Rec Lng"] = round(rough_pd["Rec Lng"])
+
+rough_pd["Fumb"] = round(rough_pd["Fumb"]) #Fumbles
+
+rough_pd["Punt Ret"] = round(rough_pd["Punt Ret"]) #Punt Returning
+rough_pd["Punt Ret Yds"] = round(rough_pd["Punt Ret Yds"])
+rough_pd["Punt Ret TDs"] = round(rough_pd["Punt Ret TDs"])
+rough_pd["Punt Ret Lng"] = round(rough_pd["Punt Ret Lng"])
+
+rough_pd["Kick Ret"] = round(rough_pd["Kick Ret"]) #Kick Returning
+rough_pd["Kick Ret Yds"] = round(rough_pd["Kick Ret Yds"])
+rough_pd["Kick Ret TDs"] = round(rough_pd["Kick Ret TDs"])
+rough_pd["Kick Ret Lng"] = round(rough_pd["Kick Ret Lng"])
+
+rough_pd["Solo Tkls"] = round(rough_pd["Solo Tkls"]) #Defense
+rough_pd["Ass Tkls"] = round(rough_pd["Ass Tkls"])
+rough_pd["TFL"] = round(rough_pd["TFL"])
+rough_pd["Sacks"] = round(rough_pd["Sacks"])
+rough_pd["QB Hits"] = round(rough_pd["QB Hits"])
+rough_pd["PD"] = round(rough_pd["PD"])
+rough_pd["FF"] = round(rough_pd["FF"])
+rough_pd["FR"] = round(rough_pd["FR"])
+rough_pd["Fum Ret TDs"] = round(rough_pd["Fum Ret TDs"])
+rough_pd["Int"] = round(rough_pd["Int"])
+rough_pd["Int Ret Yds"] = round(rough_pd["Int Ret Yds"])
+rough_pd["Int Ret TDs"] = round(rough_pd["Int Ret TDs"])
+
+rough_pd["Punts"] = round(rough_pd["Punts"]) #Punting
+rough_pd["Punt Yds"] = round(rough_pd["Punt Yds"])
+rough_pd["Punt Lng"] = round(rough_pd["Punt Lng"])
+
+rough_pd["FGA"] = round(rough_pd["FGA"]) #Kicking
+rough_pd["FGM"] = round(rough_pd["FGM"])
+rough_pd["FG Lng"] = round(rough_pd["FG Lng"])
+rough_pd["XPM"] = round(rough_pd["XPM"])
+
+rough_pd["2 Pt Pass"] = round(rough_pd["2 Pt Pass"]) #2pt
+rough_pd["2 Pt Run"] = round(rough_pd["2 Pt Run"])
+rough_pd["2 Pt Rec"] = round(rough_pd["2 Pt Rec"])
+
+rough_pd["FGM 0-19"] = round(rough_pd["FGM 0-19"]) #FG Distances
+rough_pd["FGM 20-29"] = round(rough_pd["FGM 20-29"])
+rough_pd["FGM 30-39"] = round(rough_pd["FGM 30-39"])
+rough_pd["FGM 40-49"] = round(rough_pd["FGM 40-49"])
+rough_pd["FGM 50+"] = round(rough_pd["FGM 50+"])
+
+rough_pd["OFF Snaps"] = round(rough_pd["OFF Snaps"]) #snaps
+rough_pd["DEF Snaps"] = round(rough_pd["DEF Snaps"])
+rough_pd["ST Snaps"] = round(rough_pd["ST Snaps"])
+
+rough_pd = rough_pd.astype({"Pass Att": int, "Pass Cmp": int, "Pass Yds": int, "Pass TDs": int, "Pass INTs": int,
+                            "Pass Lng": int, "Rush Att": int, "Rush Yds": int, "Rush TDs": int, "Rush Lng": int,
+                            "Rec Tgts": int, "Rec": int, "Rec Yds": int, "Rec TDs": int, "Rec Lng": int, 
+                            "Fumb": int, "Punt Ret": int, "Punt Ret Yds": int, "Punt Ret TDs": int, 
+                            "Punt Ret Lng": int, "Kick Ret": int, "Kick Ret Yds": int, "Kick Ret TDs": int, 
+                            "Kick Ret Lng": int, "Solo Tkls": int, "Ass Tkls": int, "TFL": int, "Sacks": int, 
+                            "QB Hits": int, "PD": int, "FF": int, "FR": int, "Fum Ret TDs": int, "Int": int, 
+                            "Int Ret Yds": int, "Int Ret TDs": int, "Punts": int, "Punt Yds": int, 
+                            "Punt Lng": int, "FGA": int, "FGM": int, "FG Lng": int, "XPM": int, "2 Pt Pass": int,
+                            "2 Pt Run": int, "2 Pt Rec": int, "FGM 0-19": int, "FGM 20-29": int, 
+                            "FGM 30-39": int, "FGM 40-49": int, "FGM 50+": int, "OFF Snaps": int, 
+                            "DEF Snaps": int, "ST Snaps": int}) #int conversion
+
+### ADDITIONAL STATS ###
+rough_pd['Comp%'] = round(((rough_pd['Pass Cmp'] / rough_pd['Pass Att'])*100),1) #simple added stats
+rough_pd['Rush Avg'] = round((rough_pd['Rush Yds'] / rough_pd['Rush Att']),2)
+rough_pd['Rec Yds/Tgt'] = round((rough_pd['Rec Yds'] / rough_pd['Rec Tgts']),1)
+rough_pd['Rec Yds/Rec'] = round((rough_pd['Rec Yds'] / rough_pd['Rec']),1)
+rough_pd['Punt Ret Avg'] = round((rough_pd['Punt Ret Yds'] / rough_pd['Punt Ret']),1)
+rough_pd['Kick Ret Avg'] = round((rough_pd['Kick Ret Yds'] / rough_pd['Kick Ret']),1)
+rough_pd['Tot Tkls'] = round(rough_pd["Solo Tkls"] + rough_pd["Ass Tkls"],0)
+rough_pd['Punt Avg'] = round((rough_pd['Punt Yds'] / rough_pd['Punts']),1)
+rough_pd['FG%'] = round(((rough_pd['FGM'] / rough_pd['FGA'])*100),1)
+                            
+rough_pd['Pass Rat a'] = ((((rough_pd['Pass Cmp'] / rough_pd['Pass Att']) - .3)*5)) #passer rating calc
+rough_pd.loc[rough_pd['Pass Rat a'] > 2.375, 'Pass Rat a'] = 2.375
+rough_pd.loc[rough_pd['Pass Rat a'] < 0, 'Pass Rat a'] = 0
+
+rough_pd['Pass Rat b'] = ((((rough_pd['Pass Yds'] / rough_pd['Pass Att']) - 3)*.25))
+rough_pd.loc[rough_pd['Pass Rat b'] > 2.375, 'Pass Rat b'] = 2.375
+rough_pd.loc[rough_pd['Pass Rat b'] < 0, 'Pass Rat b'] = 0
+
+rough_pd['Pass Rat c'] = (((rough_pd['Pass TDs'] / rough_pd['Pass Att'])*20))
+rough_pd.loc[rough_pd['Pass Rat c'] > 2.375, 'Pass Rat c'] = 2.375
+rough_pd.loc[rough_pd['Pass Rat c'] < 0, 'Pass Rat c'] = 0
+
+rough_pd['Pass Rat d'] = (2.375-((rough_pd['Pass INTs'] / rough_pd['Pass Att'])*25))
+rough_pd.loc[rough_pd['Pass Rat d'] > 2.375, 'Pass Rat d'] = 2.375
+rough_pd.loc[rough_pd['Pass Rat d'] < 0, 'Pass Rat d'] = 0
+
+rough_pd['Pass Rat'] = round((((rough_pd['Pass Rat a'] + rough_pd['Pass Rat b'] + rough_pd['Pass Rat c'] + 
+                        rough_pd['Pass Rat d']) / 6) * 100),1) #final pass rat calculation 
+                  
+rough_pd['Fan Pts (Non-PPR)1'] = ((rough_pd["Pass TDs"]*4) + (rough_pd["Pass Yds"]*.04) + (rough_pd["Pass INTs"]*-2)
++ (rough_pd["Rush TDs"]*6) + (rough_pd["Rush Yds"]*.1) + (rough_pd["Rec TDs"]*6) + (rough_pd["Rec Yds"]*.1) + (rough_pd["Rec"]*0)
++ (rough_pd["Fumb"]*-2) + (rough_pd["Punt Ret TDs"]*6) + (rough_pd["Kick Ret TDs"]*6) + (rough_pd["2 Pt Pass"]*2)
++ (rough_pd["2 Pt Run"]*2) + (rough_pd["2 Pt Rec"]*2) + (rough_pd["FGM 0-19"]*3) + (rough_pd["FGM 20-29"]*3) + (rough_pd["FGM 30-39"]*3)
++ (rough_pd["FGM 40-49"]*4) + (rough_pd["FGM 50+"]*5) + (rough_pd["XPM"]*1) + (rough_pd["Solo Tkls"]*1) + (rough_pd["Ass Tkls"]*.5)
++ (rough_pd["TFL"]*1) + (rough_pd["Sacks"]*2) + (rough_pd["QB Hits"]*1) + (rough_pd["PD"]*1) + (rough_pd["FF"]*3) + (rough_pd["FR"]*3)
++ (rough_pd["Fum Ret TDs"]*6) + (rough_pd["Int Ret TDs"]*6) + (rough_pd["Int"]*3)) #fantasy points calc
+
+rough_pd['Fan Pts (PPR)1'] = ((rough_pd["Pass TDs"]*4) + (rough_pd["Pass Yds"]*.04) + (rough_pd["Pass INTs"]*-2)
++ (rough_pd["Rush TDs"]*6) + (rough_pd["Rush Yds"]*.1) + (rough_pd["Rec TDs"]*6) + (rough_pd["Rec Yds"]*.1) + (rough_pd["Rec"]*1)
++ (rough_pd["Fumb"]*-2) + (rough_pd["Punt Ret TDs"]*6) + (rough_pd["Kick Ret TDs"]*6) + (rough_pd["2 Pt Pass"]*2)
++ (rough_pd["2 Pt Run"]*2) + (rough_pd["2 Pt Rec"]*2) + (rough_pd["FGM 0-19"]*3) + (rough_pd["FGM 20-29"]*3) + (rough_pd["FGM 30-39"]*3)
++ (rough_pd["FGM 40-49"]*4) + (rough_pd["FGM 50+"]*5) + (rough_pd["XPM"]*1) + (rough_pd["Solo Tkls"]*1) + (rough_pd["Ass Tkls"]*.5)
++ (rough_pd["TFL"]*1) + (rough_pd["Sacks"]*2) + (rough_pd["QB Hits"]*1) + (rough_pd["PD"]*1) + (rough_pd["FF"]*3) + (rough_pd["FR"]*3)
++ (rough_pd["Fum Ret TDs"]*6) + (rough_pd["Int Ret TDs"]*6) + (rough_pd["Int"]*3)) #fantasy points calc
+
+rough_pd['Fan Pts Avg1'] = (((rough_pd["Pass TDs"]*4) + (rough_pd["Pass Yds"]*.04) + (rough_pd["Pass INTs"]*-2)
++ (rough_pd["Rush TDs"]*6) + (rough_pd["Rush Yds"]*.1) + (rough_pd["Rec TDs"]*6) + (rough_pd["Rec Yds"]*.1) + (rough_pd["Rec"]*.5)
++ (rough_pd["Fumb"]*-2) + (rough_pd["Punt Ret TDs"]*6) + (rough_pd["Kick Ret TDs"]*6) + (rough_pd["2 Pt Pass"]*2)
++ (rough_pd["2 Pt Run"]*2) + (rough_pd["2 Pt Rec"]*2) + (rough_pd["FGM 0-19"]*3) + (rough_pd["FGM 20-29"]*3) + (rough_pd["FGM 30-39"]*3)
++ (rough_pd["FGM 40-49"]*4) + (rough_pd["FGM 50+"]*5) + (rough_pd["XPM"]*1) + (rough_pd["Solo Tkls"]*1) + (rough_pd["Ass Tkls"]*.5)
++ (rough_pd["TFL"]*1) + (rough_pd["Sacks"]*2) + (rough_pd["QB Hits"]*1) + (rough_pd["PD"]*1) + (rough_pd["FF"]*3) + (rough_pd["FR"]*3)
++ (rough_pd["Fum Ret TDs"]*6) + (rough_pd["Int Ret TDs"]*6) + (rough_pd["Int"]*3))/rough_pd['Starts']) #fantasy points calc
+
+rough_pd['Fan Pts (Non-PPR)'] = round(rough_pd['Fan Pts (Non-PPR)1'],1) #more additional stat calcs
+rough_pd['Fan Pts (PPR)'] = round(rough_pd['Fan Pts (PPR)1'],1)
+rough_pd['Fan Pts Avg'] = round(rough_pd['Fan Pts Avg1'],1)
+rough_pd['2pt Conv'] = (rough_pd["2 Pt Pass"] + rough_pd["2 Pt Run"] + rough_pd["2 Pt Rec"])
+rough_pd['Tot TDs'] = (rough_pd["Pass TDs"] + rough_pd["Rush TDs"] + rough_pd["Rec TDs"] + rough_pd["Punt Ret TDs"]
+                     + rough_pd["Kick Ret TDs"] + rough_pd["Fum Ret TDs"] + rough_pd["Int Ret TDs"])
+rough_pd['Tot Snaps'] = rough_pd["OFF Snaps"] + rough_pd["DEF Snaps"] + rough_pd["ST Snaps"] 
+rough_pd['Ret TDs'] = rough_pd["Kick Ret TDs"] + rough_pd["Punt Ret TDs"] 
+rough_pd['Def TDs'] = rough_pd["Fum Ret TDs"] + rough_pd["Int Ret TDs"]
+rough_pd['ref'] = range(0, 0+len(rough_pd))
+
+### ESPN IDS ###
+with_espn = pd.read_csv("/Users/Work/Downloads/p3espn.csv")
+with_espn.convert_dtypes().dtypes 
+with_espn['espnid'] = round(with_espn['espnid'])
+with_espn = with_espn.fillna(0)
+
+rough_eid = pd.merge(rough_pd, 
+                     with_espn, 
+                     on ='ref', 
+                     how ='left')
+rough_eid['espnid'] = rough_eid['espnid'].replace(np.nan, 0)
+rough_eid2 = rough_eid.astype({"espnid": int})
+
+##### PLAYER STATS #####
+### QUARTERBACKS ###
+quarterback_pdfilter = rough_pd[rough_pd["Pos"] == "QB"]
+quarterback_pd = quarterback_pdfilter.iloc[:,[0,1,3,4,5,6,59,7,8,9,10,72,12,13,80,79,56,77,78]]
+qb_pd = quarterback_pd.sort_values(by=['Fan Pts Avg'], ascending=False)
+    
+### RUNNING BACKS ###
+runningback_pdfilter = rough_pd[rough_pd["Pos"] == "RB"]
+runningback_pd = runningback_pdfilter.iloc[:,[0,1,3,4,11,12,60,13,14,16,17,18,20,80,79,56,77,78]]
+rb_pd = runningback_pd.sort_values(by=['Fan Pts Avg'], ascending=False)
+
+### FULL BACKS ###
+fullback_pdfilter = rough_pd[rough_pd["Pos"] == "FB"]
+fullback_pd = fullback_pdfilter.iloc[:,[0,1,3,4,11,12,60,13,14,16,17,18,20,80,79,56,77,78]]
+fb_pd = fullback_pd.sort_values(by=['Fan Pts Avg'], ascending=False)
+
+### WIDE RECEIVERS ###
+widereceiver_pdfilter = rough_pd[rough_pd["Pos"] == "WR"]
+widereceiver_pd = widereceiver_pdfilter.iloc[:,[0,1,3,4,15,61,16,62,17,18,19,20,12,13,80,79,56,77,78]]
+wr_pd = widereceiver_pd.sort_values(by=['Fan Pts Avg'], ascending=False)
+
+### TIGHT ENDS ###
+tightend_pdfilter = rough_pd[rough_pd["Pos"] == "TE"]
+tightend_pd = tightend_pdfilter.iloc[:,[0,1,3,4,15,61,16,62,17,18,19,20,12,13,80,79,56,77,78]]
+te_pd = tightend_pd.sort_values(by=['Fan Pts Avg'], ascending=False)
+
+### OFFENSIVE TACKLES ###
+offensivetackle_pdfilter = rough_pd[rough_pd["Pos"] == "OT"]
+offensivetackle_pd = offensivetackle_pdfilter.iloc[:,[0,1,3,4,15,16,36,80,79,56,77,78]]
+ot_pd = offensivetackle_pd.sort_values(by=['OFF Snaps'], ascending=False)
+
+### OFFENSIVE GUARDS ###
+offensiveguard_pdfilter = rough_pd[rough_pd["Pos"] == "G"]
+offensiveguard_pd = offensiveguard_pdfilter.iloc[:,[0,1,3,4,15,16,36,80,79,56,77,78]]
+og_pd = offensiveguard_pd.sort_values(by=['OFF Snaps'], ascending=False)
+
+### CENTERS ###
+center_pdfilter = rough_pd[rough_pd["Pos"] == "C"]
+center_pd = center_pdfilter.iloc[:,[0,1,3,4,15,16,36,80,79,56,77,78]]
+c_pd = center_pd.sort_values(by=['OFF Snaps'], ascending=False)
+
+### OFFENSIVE LINE ###
+offensiveline_pdfilter = rough_pd[(rough_pd["Pos"] == "OT") | (rough_pd["Pos"] == "G") | (rough_pd["Pos"] == "C")]
+offensiveline_pd = offensiveline_pdfilter.iloc[:,[0,1,3,4,15,16,36,80,79,56,77,78]]
+ol_pd = offensiveline_pd.sort_values(by=['OFF Snaps'], ascending=False)
+
+### DEFENSIVE END ###
+defensiveend_pdfilter = rough_pd[rough_pd["Pos"] == "DE"]
+defensiveend_pd = defensiveend_pdfilter.iloc[:,[0,1,3,4,29,30,65,31,32,33,34,35,36,37,38,39,40,80,57,77,78]]
+de_pd = defensiveend_pd.sort_values(by=['Fan Pts Avg'], ascending=False)
+
+### DEFENSIVE TACKLE ###
+defensivetackle_pdfilter = rough_pd[rough_pd["Pos"] == "DT"]
+defensivetackle_pd = defensivetackle_pdfilter.iloc[:,[0,1,3,4,29,30,65,31,32,33,34,35,36,37,38,39,40,80,57,77,78]]
+dt_pd = defensivetackle_pd.sort_values(by=['Fan Pts Avg'], ascending=False)
+
+### NOSE TACKLE ###
+nosetackle_pdfilter = rough_pd[rough_pd["Pos"] == "NT"]
+nosetackle_pd = nosetackle_pdfilter.iloc[:,[0,1,3,4,29,30,65,31,32,33,34,35,36,37,38,39,40,80,57,77,78]]
+nt_pd = nosetackle_pd.sort_values(by=['Fan Pts Avg'], ascending=False)
+
+### DEFENSIVE LINE ###
+defensiveline_pdfilter = rough_pd[(rough_pd["Pos"] == "DE") | (rough_pd["Pos"] == "DT") | (rough_pd["Pos"] == "NT")]
+defensiveline_pd = defensiveline_pdfilter.iloc[:,[0,1,3,4,29,30,65,31,32,33,34,35,36,37,38,39,40,80,57,77,78]]
+dl_pd = defensiveline_pd.sort_values(by=['Fan Pts Avg'], ascending=False)
+
+### OUTSIDE LINEBACKER ###
+outsidelinebacker_pdfilter = rough_pd[rough_pd["Pos"] == "OLB"]
+outsidelinebacker_pd = outsidelinebacker_pdfilter.iloc[:,[0,1,3,4,29,30,65,31,32,33,34,35,36,37,38,39,40,80,57,77,78]]
+olb_pd = outsidelinebacker_pd.sort_values(by=['Fan Pts Avg'], ascending=False)
+
+### INSIDE LINEBACKER ###
+insidelinebacker_pdfilter = rough_pd[rough_pd["Pos"] == "ILB"]
+insidelinebacker_pd = insidelinebacker_pdfilter.iloc[:,[0,1,3,4,29,30,65,31,32,33,34,35,36,37,38,39,40,80,57,77,78]]
+ilb_pd = insidelinebacker_pd.sort_values(by=['Fan Pts Avg'], ascending=False)
+
+### LINEBACKER ###
+linebacker_pdfilter = rough_pd[(rough_pd["Pos"] == "OLB") | (rough_pd["Pos"] == "ILB") | (rough_pd["Pos"] == "LB")]
+linebacker_pd = linebacker_pdfilter.iloc[:,[0,1,3,4,29,30,65,31,32,33,34,35,36,37,38,39,40,80,57,77,78]]
+lb_pd = linebacker_pd.sort_values(by=['Fan Pts Avg'], ascending=False)
+
+### CORNERBACK ### 
+cornerback_pdfilter = rough_pd[rough_pd["Pos"] == "CB"]
+cornerback_pd = cornerback_pdfilter.iloc[:,[0,1,3,4,29,30,65,31,32,33,34,35,36,37,38,39,40,80,57,77,78]]
+cb_pd = cornerback_pd.sort_values(by=['Fan Pts Avg'], ascending=False)
+
+### STRONG SAFETY ###
+strongsafety_pdfilter = rough_pd[rough_pd["Pos"] == "SS"]
+strongsafety_pd = strongsafety_pdfilter.iloc[:,[0,1,3,4,29,30,65,31,32,33,34,35,36,37,38,39,40,80,57,77,78]]
+ss_pd = strongsafety_pd.sort_values(by=['Fan Pts Avg'], ascending=False)
+
+### FREE SAFETY ### 
+freesafety_pdfilter = rough_pd[rough_pd["Pos"] == "FS"]
+freesafety_pd = freesafety_pdfilter.iloc[:,[0,1,3,4,29,30,65,31,32,33,34,35,36,37,38,39,40,80,57,77,78]]
+fs_pd = freesafety_pd.sort_values(by=['Fan Pts Avg'], ascending=False)
+
+### SECONDARY ###
+secondary_pdfilter = rough_pd[(rough_pd["Pos"] == "CB") | (rough_pd["Pos"] == "SS") | (rough_pd["Pos"] == "FS")]
+secondary_pd = secondary_pdfilter.iloc[:,[0,1,3,4,29,30,65,31,32,33,34,35,36,37,38,39,40,80,57,77,78]]
+sec_pd = secondary_pd.sort_values(by=['Fan Pts Avg'], ascending=False)
+
+### KICKER ###
+kicker_pdfilter = rough_pd[rough_pd["Pos"] == "K"]
+kicker_pd = kicker_pdfilter.iloc[:,[0,1,3,4,44,45,67,46,51,52,53,54,55,47,80,58,77,78]]
+k_pd = kicker_pd.sort_values(by=['Fan Pts (PPR)'], ascending=False)
+
+### PUNTER ###
+punter_pdfilter = rough_pd[rough_pd["Pos"] == "P"]
+punter_pd = punter_pdfilter.iloc[:,[0,1,3,4,41,42,66,43,80,58,77,78]]
+p_pd = punter_pd.sort_values(by=['Punt Avg'], ascending=False)
+
+### LONG SNAPPER ###
+longsnapper_pdfilter = rough_pd[rough_pd["Pos"] == "LS"]
+longsnapper_pd = longsnapper_pdfilter.iloc[:,[0,1,3,4,80,58,77,78]]
+ls_pd = longsnapper_pd.sort_values(by=['ST Snaps'], ascending=False)
+
+##### LEAGUE LEADERS #####
+
+#Minimums already stated in 2022
+
+#### PASSING ####
+### PASSING YARDS ###
+passyds_filter = rough_eid2.sort_values(by=['Pass Yds'], ascending=False)
+passyds_fil = passyds_filter.iloc[:,[85,0,1,3,7]]
+passyds = passyds_fil.head(10)
+
+### PASSING TDS ###
+passtds_filter = rough_eid2.sort_values(by=['Pass TDs'], ascending=False)
+passtds_fil = passtds_filter.iloc[:,[85,0,1,3,8]]
+passtds = passtds_fil.head(10)
+
+### PASSING INTS ###
+passints_filter = rough_eid2.sort_values(by=['Pass INTs'], ascending=False)
+passints_fil = passints_filter.iloc[:,[85,0,1,3,9]]
+passints = passints_fil.head(10)
+
+### PASSER RATING ###
+passrat_filter = rough_eid2.sort_values(by=['Pass Rat'], ascending=False)
+passrat_filt = passrat_filter[passrat_filter["Pass Att"] >= (weeks2021*passatt_min)] #Min att
+passrat_fil = passrat_filt.iloc[:,[85,0,1,3,72]]
+passrat = passrat_fil.head(10)
+
+### COMPLETION % ###
+compperc_filter = rough_eid2.sort_values(by=['Comp%'], ascending=False)
+compperc_filt = compperc_filter[compperc_filter["Pass Att"] >= (weeks2021*passatt_min)] #Min att
+compperc_fil = compperc_filt.iloc[:,[85,0,1,3,59]]
+compperc = compperc_fil.head(10)
+
+### PASSING LONG ###
+passlong_filter = rough_eid2.sort_values(by=['Pass Lng'], ascending=False)
+passlong_fil = passlong_filter.iloc[:,[85,0,1,3,10]]
+passlong = passlong_fil.head(10)
+
+### QB FAN PTS ###
+qbfanpts_filter = rough_eid2.sort_values(by=['Fan Pts Avg'], ascending=False)
+qbfanpts_filt = qbfanpts_filter[qbfanpts_filter["Pos"] == "QB"]
+qbfanpts_fil = qbfanpts_filt.iloc[:,[85,0,1,3,78]]
+qbfanpts = qbfanpts_fil.head(10)
+
+#### RUSHING ####
+### RUSHING YARDS ###
+rushyds_filter = rough_eid2.sort_values(by=['Rush Yds'], ascending=False)
+rushyds_fil = rushyds_filter.iloc[:,[85,0,1,3,12]]
+rushyds = rushyds_fil.head(10)
+
+### RUSHING TDS ###
+rushtds_filter = rough_eid2.sort_values(by=['Rush TDs'], ascending=False)
+rushtds_fil = rushtds_filter.iloc[:,[85,0,1,3,13]]
+rushtds = rushtds_fil.head(10)
+
+### RUSHING AVG ###
+rushavg_filter = rough_eid2.sort_values(by=['Rush Avg'], ascending=False)
+rushavg_filte = rushavg_filter[rushavg_filter["Pos"] == "RB"]
+rushavg_filt = rushavg_filte[rushavg_filte["Rush Att"] >= (weeks2021*rushatt_min)] #Min att
+rushavg_fil = rushavg_filt.iloc[:,[85,0,1,3,60]]
+rushavg = rushavg_fil.head(10)
+
+### RUSHING LONG ###
+rushlong_filter = rough_eid2.sort_values(by=['Rush Lng'], ascending=False)
+rushlong_fil = rushlong_filter.iloc[:,[85,0,1,3,14]]
+rushlong = rushlong_fil.head(10)
+
+### RB FAN PTS
+rbfanpts_filter = rough_eid2.sort_values(by=['Fan Pts Avg'], ascending=False)
+rbfanpts_filt = rbfanpts_filter[rbfanpts_filter["Pos"] == "RB"]
+rbfanpts_fil = rbfanpts_filt.iloc[:,[85,0,1,3,78]]
+rbfanpts = rbfanpts_fil.head(10)
+
+
+#### RECEIVING ####
+### RECEPTIONS ###
+rec_filter = rough_eid2.sort_values(by=['Rec'], ascending=False)
+rec_fil = rec_filter.iloc[:,[85,0,1,3,16]]
+rec = rec_fil.head(10)
+
+### RECEIVING YDS ###
+recyds_filter = rough_eid2.sort_values(by=['Rec Yds'], ascending=False)
+recyds_fil = recyds_filter.iloc[:,[85,0,1,3,17]]
+recyds = recyds_fil.head(10)
+
+### RECEIVING TDS ###
+rectds_filter = rough_eid2.sort_values(by=['Rec TDs'], ascending=False)
+rectds_fil = rectds_filter.iloc[:,[85,0,1,3,18]]
+rectds = rectds_fil.head(10)
+
+### RECEIVING YDS/TGT ###
+recydstgt_filter = rough_eid2.sort_values(by=['Rec Yds/Tgt'], ascending=False)
+recydstgt_filt = recydstgt_filter[recydstgt_filter["Rec Tgts"] >= (weeks2021*recatt_min)] #Min att
+recydstgt_fil = recydstgt_filt.iloc[:,[85,0,1,3,61]]
+recydstgt = recydstgt_fil.head(10)
+
+### RECEIVING LONG ###
+reclng_filter = rough_eid2.sort_values(by=['Rec Lng'], ascending=False)
+reclng_fil = reclng_filter.iloc[:,[85,0,1,3,19]]
+reclng = reclng_fil.head(10)
+
+### WR/TE FAN PTS ###
+wrtefanpts_filter = rough_eid2.sort_values(by=['Fan Pts Avg'], ascending=False)
+wrtefanpts_filt = wrtefanpts_filter[(wrtefanpts_filter["Pos"] == "WR") | (wrtefanpts_filter["Pos"] == "TE")]
+wrtefanpts_fil = wrtefanpts_filt.iloc[:,[85,0,1,3,78]]
+wrtefanpts = wrtefanpts_fil.head(10)
+
+
+#### DEFENSIVE ####
+### SOLO TACKLES ###
+solotkls_filter = rough_eid2.sort_values(by=['Solo Tkls'], ascending=False)
+solotkls_fil = solotkls_filter.iloc[:,[85,0,1,3,29]]
+solotkls = solotkls_fil.head(10)
+
+### TOTAL TACKLES ###
+tottkls_filter = rough_eid2.sort_values(by=['Tot Tkls'], ascending=False)
+tottkls_fil = tottkls_filter.iloc[:,[85,0,1,3,65]]
+tottkls = tottkls_fil.head(10)
+
+### TACKLES FOR LOSS ###
+tfl_filter = rough_eid2.sort_values(by=['TFL'], ascending=False)
+tfl_fil = tfl_filter.iloc[:,[85,0,1,3,31]]
+tfl = tfl_fil.head(10)
+
+### SACKS ###
+sacks_filter = rough_eid2.sort_values(by=['Sacks'], ascending=False)
+sacks_fil = sacks_filter.iloc[:,[85,0,1,3,32]]
+sacks = sacks_fil.head(10)
+
+### QB HITS ###
+qbhits_filter = rough_eid2.sort_values(by=['QB Hits'], ascending=False)
+qbhits_fil = qbhits_filter.iloc[:,[85,0,1,3,33]]
+qbhits = qbhits_fil.head(10)
+
+### PASSES DEFENDED ###
+pdef_filter = rough_eid2.sort_values(by=['PD'], ascending=False)
+pdef_fil = pdef_filter.iloc[:,[85,0,1,3,34]]
+pdef = pdef_fil.head(10)
+
+### FORCED FUMBLES ###
+ff_filter = rough_eid2.sort_values(by=['FF'], ascending=False)
+ff_fil = ff_filter.iloc[:,[85,0,1,3,35]]
+ff = ff_fil.head(10)
+
+### FUMBLE RECOVERIES ###
+fr_filter = rough_eid2.sort_values(by=['FR'], ascending=False)
+fr_filt = fr_filter[fr_filter["Unit"] == "DEF"]
+fr_fil = fr_filt.iloc[:,[85,0,1,3,36]]
+fr = fr_fil.head(10)
+
+### INTERCEPTIONS ###
+ints_filter = rough_eid2.sort_values(by=['Int'], ascending=False)
+ints_fil = ints_filter.iloc[:,[85,0,1,3,38]]
+ints = ints_fil.head(10)
+
+### DEFENSIVE TDS ###
+deftds_filter = rough_eid2.sort_values(by=['Def TDs'], ascending=False)
+deftds_fil = deftds_filter.iloc[:,[85,0,1,3,83]]
+deftds = deftds_fil.head(10)
+
+### DEF FAN PTS ###
+deffanpts_filter = rough_eid2.sort_values(by=['Fan Pts Avg'], ascending=False)
+deffanpts_filt = deffanpts_filter[deffanpts_filter["Unit"] == "DEF"]
+deffanpts_fil = deffanpts_filt.iloc[:,[85,0,1,3,78]]
+deffanpts = deffanpts_fil.head(10)
+
+#### PUNTING ####
+### PUNTS YDS ###
+puntyds_filter = rough_eid2.sort_values(by=['Punt Yds'], ascending=False)
+puntyds_fil = puntyds_filter.iloc[:,[85,0,1,3,42]]
+puntyds = puntyds_fil.head(10)
+
+### PUNT AVG ###
+puntavg_filter = rough_eid2.sort_values(by=['Punt Avg'], ascending=False)
+puntavg_filt = puntavg_filter[puntavg_filter["Punts"] >= (weeks2021*puntatt_min)] #Min att
+puntavg_fil = puntavg_filt.iloc[:,[85,0,1,3,66]]
+puntavg = puntavg_fil.head(10)
+
+### PUNT LONG ###
+puntlong_filter = rough_eid2.sort_values(by=['Punt Lng'], ascending=False)
+puntlong_fil = puntlong_filter.iloc[:,[85,0,1,3,43]]
+puntlong = puntlong_fil.head(10)
+
+#### KICKING ####
+### XPM ###
+xpm_filter = rough_eid2.sort_values(by=['XPM'], ascending=False)
+xpm_fil = xpm_filter.iloc[:,[85,0,1,3,47]]
+xpm = xpm_fil.head(10)
+
+### FGM ###
+fgm_filter = rough_eid2.sort_values(by=['FGM'], ascending=False)
+fgm_fil = fgm_filter.iloc[:,[85,0,1,3,45]]
+fgm = fgm_fil.head(10)
+
+### FG % ###
+fgperc_filter = rough_eid2.sort_values(by=['FG%'], ascending=False)
+fgperc_filt = fgperc_filter[fgperc_filter["FGA"] >= (weeks2021*fgatt_min)] #Min att
+fgperc_fil = fgperc_filt.iloc[:,[85,0,1,3,67]]
+fgperc = fgperc_fil.head(10)
+
+### FG LONG ###
+fglong_filter = rough_eid2.sort_values(by=['FG Lng'], ascending=False)
+fglong_fil = fglong_filter.iloc[:,[85,0,1,3,46]]
+fglong = fglong_fil.head(10)
+
+### FGM 50+ ###
+fgm50_filter = rough_eid2.sort_values(by=['FGM 50+'], ascending=False)
+fgm50_fil = fgm50_filter.iloc[:,[85,0,1,3,55]]
+fgm50 = fgm50_fil.head(10)
+
+### K FAN PTS ###
+kfanpts_filter = rough_eid2.sort_values(by=['Fan Pts Avg'], ascending=False)
+kfanpts_filt = kfanpts_filter[kfanpts_filter["Pos"] == "K"]
+kfanpts_fil = kfanpts_filt.iloc[:,[85,0,1,3,78]]
+kfanpts = kfanpts_fil.head(10)
+
+
+#### RETURNING ####
+### PUNT RET YDS ###
+puntretyds_filter = rough_eid2.sort_values(by=['Punt Ret Yds'], ascending=False)
+puntretyds_fil = puntretyds_filter.iloc[:,[85,0,1,3,22]]
+puntretyds = puntretyds_fil.head(10)
+
+### PUNT RET AVG ###
+puntretavg_filter = rough_eid2.sort_values(by=['Punt Ret Avg'], ascending=False)
+puntretavg_filt = puntretavg_filter[puntretavg_filter["Punt Ret"] >= (weeks2021*puntretatt_min)] #Min att
+puntretavg_fil = puntretavg_filt.iloc[:,[85,0,1,3,63]]
+puntretavg = puntretavg_fil.head(10)
+
+### PUNT RET TDS ###
+puntrettds_filter = rough_eid2.sort_values(by=['Punt Ret TDs'], ascending=False)
+puntrettds_fil = puntrettds_filter.iloc[:,[85,0,1,3,23]]
+puntrettds = puntrettds_fil.head(10)
+
+### KICK RET YDS ###
+kickretyds_filter = rough_eid2.sort_values(by=['Kick Ret Yds'], ascending=False)
+kickretyds_fil = kickretyds_filter.iloc[:,[85,0,1,3,26]]
+kickretyds = kickretyds_fil.head(10)
+
+### KICK RET AVG ###
+kickretavg_filter = rough_eid2.sort_values(by=['Kick Ret Avg'], ascending=False)
+kickretavg_filt = kickretavg_filter[kickretavg_filter["Kick Ret"] >= (weeks2021*kickretatt_min)] #Min att
+kickretavg_fil = kickretavg_filt.iloc[:,[85,0,1,3,64]]
+kickretavg = kickretavg_fil.head(10)
+
+### KICK RET TDS ###
+kickrettds_filter = rough_eid2.sort_values(by=['Kick Ret TDs'], ascending=False)
+kickrettds_fil = kickrettds_filter.iloc[:,[85,0,1,3,27]]
+kickrettds = kickrettds_fil.head(10)
+
+### RET TDS ###
+rettds_filter = rough_eid2.sort_values(by=['Ret TDs'], ascending=False)
+rettds_fil = rettds_filter.iloc[:,[85,0,1,3,82]]
+rettds = rettds_fil.head(10)
+
+#### MISCELLANEOUS ####
+### FUMBLES LOST ###
+fumblost_filter = rough_eid2.sort_values(by=['Fumb'], ascending=False)
+fumblost_fil = fumblost_filter.iloc[:,[85,0,1,3,20]]
+fumblost = fumblost_fil.head(10)
+
+### 2 PT CONV ###
+twopt_filter = rough_eid2.sort_values(by=['2pt Conv'], ascending=False)
+twopt_fil = twopt_filter.iloc[:,[85,0,1,3,79]]
+twopt = twopt_fil.head(10)
+
+### SNAPS ###
+snaps_filter = rough_eid2.sort_values(by=['Tot Snaps'], ascending=False)
+snaps_fil = snaps_filter.iloc[:,[85,0,1,3,81]]
+snaps = snaps_fil.head(10)
+
+### ------------------------------------------------------------------- TITLE ------------------------------------------------------------------- ###
+display(HTML(emoji.emojize('<h1>:american_football:  NFL Database  :american_football:<h1>')))
+
+##### WIDGETS #####
+sel_season1 = widgets.IntSlider(
+   value=2021,
+   min=2021,
+   max=2022,
+   step=1,
+   description='Select a Season:',
+   disabled=False,
+   continuous_update=False,
+   orientation='horizontal',
+   readout=True,
+   readout_format='d',
+   style= {'description_width': 'initial'}
+)
+
+sel_category1 = widgets.RadioButtons(
+   options = ["Player Stats","League Leaders"],
+   description='Select:',
+   disabled=False,
+   style= {'description_width': 'initial'}
+)
+
+sel_position1 = widgets.RadioButtons(
+   options = ["Select a Position","Quarterback","Running Back","Wide Receiver","Tight End","Offensive Tackle","Offensive Guard","Center","Offensive Line",
+             "Defensive End","Defensive Tackle","Nose Tackle","Defensive Line","Outside Linebacker","Inside Linebacker","Linebacker",  
+             "Cornerback","Strong Safety","Free Safety","Secondary","Kicker","Punter","Long Snapper"],
+   description='Select a Position:',
+   disabled=False,
+   style= {'description_width': 'initial'}
+)
+
+sel_catll1 = widgets.RadioButtons(
+   options = ["Passing", "Rushing","Receiving","Defensive","Kicking","Punting","Returning","Miscellaneous"],
+   description='Select a Category:',
+   disabled=False,
+   style= {'description_width': 'initial'}
+)
+
+sel_seasonll1 = widgets.IntSlider(
+   value=2021,
+   min=2021,
+   max=2022,
+   step=1,
+   description='Select a Season:',
+   disabled=False,
+   continuous_update=False,
+   orientation='horizontal',
+   readout=True,
+   readout_format='d',
+   style= {'description_width': 'initial'}
+)
+
+#2021 LLs
+sel_passingll1 = widgets.RadioButtons(
+   options = ["Passing Yards", "Passing TDs","Passing INTs","Passer Rating","Completion %","Longest Pass","QB Fantasy Pts"],
+   description='Passing Stat:',
+   disabled=False,
+   style= {'description_width': 'initial'}
+)
+
+sel_rushingll1 = widgets.RadioButtons(
+   options = ["Rushing Yards", "Rushing TDs","Rushing Avg","Longest Rush","RB Fantasy Pts"],
+   description='Passing Stat:',
+   disabled=False,
+   style= {'description_width': 'initial'}
+)
+
+sel_receivingll1 = widgets.RadioButtons(
+   options = ["Receptions", "Receiving Yards","Receiving Yds/Tgt","Receiving TDs","Longest Reception","WR/TE Fantasy Pts"],
+   description='Passing Stat:',
+   disabled=False,
+   style= {'description_width': 'initial'}
+)
+
+sel_defensivell1 = widgets.RadioButtons(
+   options = ["Solo Tackles", "Total Tackles","Tackles For Loss","Sacks","QB Hits","Passes Defended","Forced Fumbles",
+   "Fumble Recoveries","Interceptions","Defensive TDs","IDP Fantasy Pts"],
+   description='Passing Stat:',
+   disabled=False,
+   style= {'description_width': 'initial'}
+)
+
+sel_kickingll1 = widgets.RadioButtons(
+   options = ["Extra Points Made", "Field Goals Made","Field Goal %","Field Goal Long","50+ Yds FGM","K Fantasy Pts"],
+   description='Passing Stat:',
+   disabled=False,
+   style= {'description_width': 'initial'}
+)
+
+sel_puntingll1 = widgets.RadioButtons(
+   options = ["Punting Yards", "Punting Avg","Punting Long"],
+   description='Passing Stat:',
+   disabled=False,
+   style= {'description_width': 'initial'}
+)
+
+sel_returningll1 = widgets.RadioButtons(
+   options = ["Punt Return Yds", "Punt Return Avg","Punt Return TDs","Kick Return Yds","Kick Return Avg","Kick Return TDs","Total Return TDs"],
+   description='Passing Stat:',
+   disabled=False,
+   style= {'description_width': 'initial'}
+)
+
+sel_miscellaneousll1 = widgets.RadioButtons(
+   options = ["Fumbles Lost", "2 Pt Conversions","Snaps"],
+   description='Passing Stat:',
+   disabled=False,
+   style= {'description_width': 'initial'}
+)
+
+#2022 LLs
+sel_passingll22 = widgets.RadioButtons(
+   options = ["Passing Yards", "Passing TDs","Passing INTs","Passer Rating","Completion %","Longest Pass","QB Fantasy Pts"],
+   description='Passing Stat:',
+   disabled=False,
+   style= {'description_width': 'initial'}
+)
+
+sel_rushingll22 = widgets.RadioButtons(
+   options = ["Rushing Yards", "Rushing TDs","Rushing Avg","Longest Rush","RB Fantasy Pts"],
+   description='Passing Stat:',
+   disabled=False,
+   style= {'description_width': 'initial'}
+)
+sel_receivingll22 = widgets.RadioButtons(
+   options = ["Receptions", "Receiving Yards","Receiving Yds/Tgt","Receiving TDs","Longest Reception","WR/TE Fantasy Pts"],
+   description='Passing Stat:',
+   disabled=False,
+   style= {'description_width': 'initial'}
+)
+
+sel_defensivell22 = widgets.RadioButtons(
+   options = ["Solo Tackles", "Total Tackles","Tackles For Loss","Sacks","QB Hits","Passes Defended","Forced Fumbles",
+   "Fumble Recoveries","Interceptions","Defensive TDs","IDP Fantasy Pts"],
+   description='Passing Stat:',
+   disabled=False,
+   style= {'description_width': 'initial'}
+)
+
+sel_kickingll22 = widgets.RadioButtons(
+   options = ["Extra Points Made", "Field Goals Made","Field Goal %","Field Goal Long","50+ Yds FGM","K Fantasy Pts"],
+   description='Passing Stat:',
+   disabled=False,
+   style= {'description_width': 'initial'}
+)
+
+sel_puntingll22 = widgets.RadioButtons(
+   options = ["Punting Yards", "Punting Avg","Punting Long"],
+   description='Passing Stat:',
+   disabled=False,
+   style= {'description_width': 'initial'}
+)
+
+sel_returningll22 = widgets.RadioButtons(
+   options = ["Punt Return Yds", "Punt Return Avg","Punt Return TDs","Kick Return Yds","Kick Return Avg","Kick Return TDs","Total Return TDs"],
+   description='Passing Stat:',
+   disabled=False,
+   style= {'description_width': 'initial'}
+)
+
+sel_miscellaneousll22 = widgets.RadioButtons(
+   options = ["Fumbles Lost", "2 Pt Conversions","Snaps"],
+   description='Passing Stat:',
+   disabled=False,
+   style= {'description_width': 'initial'}
+)
+
+##### FUNCTIONS #####
+### PLAYER STAT FUNCTION -> SELECTS SEASON/POSITION ###
+def player_stat(sel_season, position):
+    if sel_season == 2021:
+        if position == ("Select a Position"):
+            display(HTML("<h3><font color='red'>To view the </font>data<font color='red'>, select a </font>position <font color='red'>first!</font></h3>"))
+        elif position == ("Quarterback"):
+            display(qb_pd)
+        elif position == ("Running Back"):
+            display(rb_pd)
+        elif position == ("Wide Receiver"):
+            display(wr_pd)
+        elif position == ("Tight End"):
+            display(te_pd)
+        elif position == ("Offensive Tackle"):
+            display(ot_pd)
+        elif position == ("Offensive Guard"):
+            display(og_pd)
+        elif position == ("Center"):
+            display(c_pd)
+        elif position == ("Offensive Line"):
+            display(ol_pd)
+        elif position == ("Defensive End"):
+            display(de_pd)
+        elif position == ("Defensive Tackle"):
+            display(dt_pd)
+        elif position == ("Nose Tackle"):
+            display(nt_pd)
+        elif position == ("Defensive Line"):
+            display(dl_pd)
+        elif position == ("Outside Linebacker"):
+            display(olb_pd)
+        elif position == ("Inside Linebacker"):
+            display(ilb_pd)
+        elif position == ("Linebacker"):
+            display(lb_pd)
+        elif position == ("Cornerback"):
+            display(cb_pd)
+        elif position == ("Strong Safety"):
+            display(ss_pd)
+        elif position == ("Free Safety"):
+            display(fs_pd)
+        elif position == ("Secondary"):
+            display(sec_pd)
+        elif position == ("Kicker"):
+            display(k_pd)
+        elif position == ("Punter"):
+            display(p_pd)
+        elif position == ("Long Snapper"):
+            display(ls_pd)
+    if sel_season == 2022:
+        if position == ("Select a Position"):
+            display(HTML("<h3><font color='red'>To view the </font>data<font color='red'>, select a </font>position <font color='red'>first!</font></h3>"))
+        elif position == ("Quarterback"):
+            display(qb_pd2)
+        elif position == ("Running Back"):
+            display(rb_pd2)
+        elif position == ("Wide Receiver"):
+            display(wr_pd2)
+        elif position == ("Tight End"):
+            display(te_pd2)
+        elif position == ("Offensive Tackle"):
+            display(ot_pd2)
+        elif position == ("Offensive Guard"):
+            display(og_pd2)
+        elif position == ("Center"):
+            display(c_pd2)
+        elif position == ("Offensive Line"):
+            display(ol_pd2)
+        elif position == ("Defensive End"):
+            display(de_pd2)
+        elif position == ("Defensive Tackle"):
+            display(dt_pd2)
+        elif position == ("Nose Tackle"):
+            display(nt_pd2)
+        elif position == ("Defensive Line"):
+            display(dl_pd2)
+        elif position == ("Outside Linebacker"):
+            display(olb_pd2)
+        elif position == ("Inside Linebacker"):
+            display(ilb_pd2)
+        elif position == ("Linebacker"):
+            display(lb_pd2)
+        elif position == ("Cornerback"):
+            display(cb_pd2)
+        elif position == ("Strong Safety"):
+            display(ss_pd2)
+        elif position == ("Free Safety"):
+            display(fs_pd2)
+        elif position == ("Secondary"):
+            display(sec_pd2)
+        elif position == ("Kicker"):
+            display(k_pd2)
+        elif position == ("Punter"):
+            display(p_pd2)
+        elif position == ("Long Snapper"):
+            display(ls_pd2)
+pass
+
+#2021
+def ll_passing(sel_passingll):
+    if sel_passingll == ("Passing Yards"):
+        display(passyds)
+        display(HTML(emoji.emojize('<h1>:cold_face:   League Leaders   :cold_face:<h1>')))
+        passydsy = passyds['Name']
+        passydsx = passyds['Pass Yds']
+        passydscolors = ['crimson', 'paleturquoise', 'cornflowerblue', 'salmon', 'silver','orange','lightsteelblue','dodgerblue','blueviolet','limegreen']
+        height = .9
+        passyds_graph = plt.barh(y=passydsy, width=passydsx, height=height, color=passydscolors, align='center', edgecolor = 'black')
+        passyds_g = plt.bar_label(passyds_graph, labels=passydsx, label_type="edge",padding=-70)
+        for i, (label, passydsval) in enumerate(zip(passydsy, passydsx)):
+            passyds_resp = requests.get(f"https://a.espncdn.com/combiner/i?img=/i/headshots/nfl/players/full/{passyds.iloc[0+i,0]}.png&w=350&h=254")
+            passyds_r = plt.imread(BytesIO(passyds_resp.content))
+            plt.imshow(passyds_r, extent=[passydsval - 500, passydsval - 2, i - height / 2, i + height / 2], aspect='auto', zorder=2)
+        passyds_g = plt.xlim(0, max(passydsx) * 1.05)
+        passyds_g = plt.ylim(-0.5, len(passydsy) - 0.5)
+        passyds_g = plt.tight_layout()
+        passyds_g = plt.show()
+    elif sel_passingll == ("Passing TDs"):
+        display(passtds)
+        display(HTML(emoji.emojize('<h1>:cold_face:   League Leaders   :cold_face:<h1>')))
+        passtdsy = passtds['Name']
+        passtdsx = passtds['Pass TDs']
+        passtdscolors = ['crimson', 'paleturquoise', 'cornflowerblue', 'salmon', 'silver','orange','lightsteelblue','dodgerblue','blueviolet','limegreen']
+        height = .9
+        passtds_graph = plt.barh(y=passtdsy, width=passtdsx, height=height, color=passtdscolors, align='center', edgecolor = 'black')
+        passtds_g = plt.bar_label(passtds_graph, labels=passtdsx, label_type="edge",padding=-20)
+        for i, (label, passtdsval) in enumerate(zip(passtdsy, passtdsx)):
+            passtds_resp = requests.get(f"https://a.espncdn.com/combiner/i?img=/i/headshots/nfl/players/full/{passtds.iloc[0+i,0]}.png&w=350&h=254")
+            passtds_r = plt.imread(BytesIO(passtds_resp.content))
+            plt.imshow(passtds_r, extent=[passtdsval - 500, passtdsval - 2, i - height / 2, i + height / 2], aspect='auto', zorder=2)
+        passtds_g = plt.xlim(0, max(passtdsx) * 1.05)
+        passtds_g = plt.ylim(-0.5, len(passtdsy) - 0.5)
+        passtds_g = plt.tight_layout()
+        passtds_g = plt.show()
+    elif sel_passingll == ("Passing INTs"):
+        display(passints)
+        labels1 = passints['Name']
+        values1 = passints['Pass INTs']
+        colors = ['crimson', 'paleturquoise', 'cornflowerblue', 'salmon', 'silver','orange','lightsteelblue','dodgerblue','blueviolet','limegreen']
+        height = .9
+        graph = plt.barh(y=labels1, width=values1, height=height, color=colors, align='center', edgecolor = 'black')
+        plt.bar_label(graph, labels=values1, label_type="edge",padding=-20)
+        plt.xlim(0, max(values1) * 1.05)
+        plt.ylim(-0.5, len(labels1) - 0.5)
+        plt.tight_layout()
+        plt.show()
+    elif sel_passingll == ("Passer Rating"):
+        display(passrat)
+        labels1 = passrat['Name']
+        values1 = passrat['Pass Rat']
+        colors = ['crimson', 'paleturquoise', 'cornflowerblue', 'salmon', 'silver','orange','lightsteelblue','dodgerblue','blueviolet','limegreen']
+        height = .9
+        graph = plt.barh(y=labels1, width=values1, height=height, color=colors, align='center', edgecolor = 'black')
+        plt.bar_label(graph, labels=values1, label_type="edge",padding=-35)
+        plt.xlim(0, max(values1) * 1.05)
+        plt.ylim(-0.5, len(labels1) - 0.5)
+        plt.tight_layout()
+        plt.show()
+    elif sel_passingll == ("Completion %"):
+        display(compperc)
+        labels1 = compperc['Name']
+        values1 = compperc['Comp%']
+        colors = ['crimson', 'paleturquoise', 'cornflowerblue', 'salmon', 'silver','orange','lightsteelblue','dodgerblue','blueviolet','limegreen']
+        height = .9
+        graph = plt.barh(y=labels1, width=values1, height=height, color=colors, align='center', edgecolor = 'black')
+        plt.bar_label(graph, labels=values1, label_type="edge",padding=-35)
+        plt.xlim(0, max(values1) * 1.05)
+        plt.ylim(-0.5, len(labels1) - 0.5)
+        plt.tight_layout()
+        plt.show()
+    elif sel_passingll == ("Longest Pass"):
+        display(passlong)
+        labels1 = passlong['Name']
+        values1 = passlong['Pass Lng']
+        colors = ['crimson', 'paleturquoise', 'cornflowerblue', 'salmon', 'silver','orange','lightsteelblue','dodgerblue','blueviolet','limegreen']
+        height = .9
+        graph = plt.barh(y=labels1, width=values1, height=height, color=colors, align='center', edgecolor = 'black')
+        plt.bar_label(graph, labels=values1, label_type="edge",padding=-20)
+        plt.xlim(0, max(values1) * 1.05)
+        plt.ylim(-0.5, len(labels1) - 0.5)
+        plt.tight_layout()
+        plt.show()
+    elif sel_passingll == ("QB Fantasy Pts"):
+        display(qbfanpts)
+        labels1 = qbfanpts['Name']
+        values1 = qbfanpts['Fan Pts Avg']
+        colors = ['crimson', 'paleturquoise', 'cornflowerblue', 'salmon', 'silver','orange','lightsteelblue','dodgerblue','blueviolet','limegreen']
+        height = .9
+        graph = plt.barh(y=labels1, width=values1, height=height, color=colors, align='center', edgecolor = 'black')
+        plt.bar_label(graph, labels=values1, label_type="edge",padding=-35)
+        plt.xlim(0, max(values1) * 1.05)
+        plt.ylim(-0.5, len(labels1) - 0.5)
+        plt.tight_layout()
+        plt.show()
+pass
+
+def ll_rushing(sel_rushingll):
+    if sel_rushingll == ("Rushing Yards"):
+        display(rushyds)
+        labels1 = rushyds['Name']
+        values1 = rushyds['Rush Yds']
+        colors = ['crimson', 'paleturquoise', 'cornflowerblue', 'salmon', 'silver','orange','lightsteelblue','dodgerblue','blueviolet','limegreen']
+        height = .9
+        graph = plt.barh(y=labels1, width=values1, height=height, color=colors, align='center', edgecolor = 'black')
+        plt.bar_label(graph, labels=values1, label_type="edge",padding=-30)
+        plt.xlim(0, max(values1) * 1.05)
+        plt.ylim(-0.5, len(labels1) - 0.5)
+        plt.tight_layout()
+        plt.show()        
+    elif sel_rushingll == ("Rushing TDs"):
+        display(rushtds)
+        labels1 = rushtds['Name']
+        values1 = rushtds['Rush TDs']
+        colors = ['crimson', 'paleturquoise', 'cornflowerblue', 'salmon', 'silver','orange','lightsteelblue','dodgerblue','blueviolet','limegreen']
+        height = .9
+        graph = plt.barh(y=labels1, width=values1, height=height, color=colors, align='center', edgecolor = 'black')
+        plt.bar_label(graph, labels=values1, label_type="edge",padding=-20)
+        plt.xlim(0, max(values1) * 1.05)
+        plt.ylim(-0.5, len(labels1) - 0.5)
+        plt.tight_layout()
+        plt.show()        
+    elif sel_rushingll == ("Rushing Avg"):
+        display(rushavg)
+        labels1 = rushavg['Name']
+        values1 = rushavg['Rush Avg']
+        colors = ['crimson', 'paleturquoise', 'cornflowerblue', 'salmon', 'silver','orange','lightsteelblue','dodgerblue','blueviolet','limegreen']
+        height = .9
+        graph = plt.barh(y=labels1, width=values1, height=height, color=colors, align='center', edgecolor = 'black')
+        plt.bar_label(graph, labels=values1, label_type="edge",padding=-40)
+        plt.xlim(0, max(values1) * 1.05)
+        plt.ylim(-0.5, len(labels1) - 0.5)
+        plt.tight_layout()
+        plt.show()
+    elif sel_rushingll == ("Longest Rush"):
+        display(rushlong)
+        labels1 = rushlong['Name']
+        values1 = rushlong['Rush Lng']
+        colors = ['crimson', 'paleturquoise', 'cornflowerblue', 'salmon', 'silver','orange','lightsteelblue','dodgerblue','blueviolet','limegreen']
+        height = .9
+        graph = plt.barh(y=labels1, width=values1, height=height, color=colors, align='center', edgecolor = 'black')
+        plt.bar_label(graph, labels=values1, label_type="edge",padding=-20)
+        plt.xlim(0, max(values1) * 1.05)
+        plt.ylim(-0.5, len(labels1) - 0.5)
+        plt.tight_layout()
+        plt.show()
+    elif sel_rushingll == ("RB Fantasy Pts"):
+        display(rbfanpts)
+        labels1 = rbfanpts['Name']
+        values1 = rbfanpts['Fan Pts Avg']
+        colors = ['crimson', 'paleturquoise', 'cornflowerblue', 'salmon', 'silver','orange','lightsteelblue','dodgerblue','blueviolet','limegreen']
+        height = .9
+        graph = plt.barh(y=labels1, width=values1, height=height, color=colors, align='center', edgecolor = 'black')
+        plt.bar_label(graph, labels=values1, label_type="edge",padding=-35)
+        plt.xlim(0, max(values1) * 1.05)
+        plt.ylim(-0.5, len(labels1) - 0.5)
+        plt.tight_layout()
+        plt.show()
+pass
+
+def ll_receiving(sel_receivingll):
+    if sel_receivingll == ("Receptions"):
+        display(rec)
+        labels1 = rec['Name']
+        values1 = rec['Rec']
+        colors = ['crimson', 'paleturquoise', 'cornflowerblue', 'salmon', 'silver','orange','lightsteelblue','dodgerblue','blueviolet','limegreen']
+        height = .9
+        graph = plt.barh(y=labels1, width=values1, height=height, color=colors, align='center', edgecolor = 'black')
+        plt.bar_label(graph, labels=values1, label_type="edge",padding=-20)
+        plt.xlim(0, max(values1) * 1.05)
+        plt.ylim(-0.5, len(labels1) - 0.5)
+        plt.tight_layout()
+        plt.show()
+    elif sel_receivingll == ("Receiving Yards"):
+        display(recyds)
+        labels1 = recyds['Name']
+        values1 = recyds['Rec Yds']
+        colors = ['crimson', 'paleturquoise', 'cornflowerblue', 'salmon', 'silver','orange','lightsteelblue','dodgerblue','blueviolet','limegreen']
+        height = .9
+        graph = plt.barh(y=labels1, width=values1, height=height, color=colors, align='center', edgecolor = 'black')
+        plt.bar_label(graph, labels=values1, label_type="edge",padding=-30)
+        plt.xlim(0, max(values1) * 1.05)
+        plt.ylim(-0.5, len(labels1) - 0.5)
+        plt.tight_layout()
+        plt.show()
+    elif sel_receivingll == ("Receiving Yds/Tgt"):
+        display(recydstgt)
+        labels1 = recydstgt['Name']
+        values1 = recydstgt['Rec Yds/Tgt']
+        colors = ['crimson', 'paleturquoise', 'cornflowerblue', 'salmon', 'silver','orange','lightsteelblue','dodgerblue','blueviolet','limegreen']
+        height = .9
+        graph = plt.barh(y=labels1, width=values1, height=height, color=colors, align='center', edgecolor = 'black')
+        plt.bar_label(graph, labels=values1, label_type="edge",padding=-35)
+        plt.xlim(0, max(values1) * 1.05)
+        plt.ylim(-0.5, len(labels1) - 0.5)
+        plt.tight_layout()
+        plt.show()
+    elif sel_receivingll == ("Receiving TDs"):
+        display(rectds)
+        labels1 = rectds['Name']
+        values1 = rectds['Rec TDs']
+        colors = ['crimson', 'paleturquoise', 'cornflowerblue', 'salmon', 'silver','orange','lightsteelblue','dodgerblue','blueviolet','limegreen']
+        height = .9
+        graph = plt.barh(y=labels1, width=values1, height=height, color=colors, align='center', edgecolor = 'black')
+        plt.bar_label(graph, labels=values1, label_type="edge",padding=-20)
+        plt.xlim(0, max(values1) * 1.05)
+        plt.ylim(-0.5, len(labels1) - 0.5)
+        plt.tight_layout()
+        plt.show()
+    elif sel_receivingll == ("Longest Reception"):
+        display(reclng)
+        labels1 = reclng['Name']
+        values1 = reclng['Rec Lng']
+        colors = ['crimson', 'paleturquoise', 'cornflowerblue', 'salmon', 'silver','orange','lightsteelblue','dodgerblue','blueviolet','limegreen']
+        height = .9
+        graph = plt.barh(y=labels1, width=values1, height=height, color=colors, align='center', edgecolor = 'black')
+        plt.bar_label(graph, labels=values1, label_type="edge",padding=-20)
+        plt.xlim(0, max(values1) * 1.05)
+        plt.ylim(-0.5, len(labels1) - 0.5)
+        plt.tight_layout()
+        plt.show()
+    elif sel_receivingll == ("WR/TE Fantasy Pts"):
+        display(wrtefanpts)
+        labels1 = wrtefanpts['Name']
+        values1 = wrtefanpts['Fan Pts Avg']
+        colors = ['crimson', 'paleturquoise', 'cornflowerblue', 'salmon', 'silver','orange','lightsteelblue','dodgerblue','blueviolet','limegreen']
+        height = .9
+        graph = plt.barh(y=labels1, width=values1, height=height, color=colors, align='center', edgecolor = 'black')
+        plt.bar_label(graph, labels=values1, label_type="edge",padding=-35)
+        plt.xlim(0, max(values1) * 1.05)
+        plt.ylim(-0.5, len(labels1) - 0.5)
+        plt.tight_layout()
+        plt.show()
+pass
+
+def ll_defensive(sel_defensivell):
+    if sel_defensivell == ("Solo Tackles"):
+        display(solotkls)
+        labels1 = solotkls['Name']
+        values1 = solotkls['Solo Tkls']
+        colors = ['crimson', 'paleturquoise', 'cornflowerblue', 'salmon', 'silver','orange','lightsteelblue','dodgerblue','blueviolet','limegreen']
+        height = .9
+        graph = plt.barh(y=labels1, width=values1, height=height, color=colors, align='center', edgecolor = 'black')
+        plt.bar_label(graph, labels=values1, label_type="edge",padding=-20)
+        plt.xlim(0, max(values1) * 1.05)
+        plt.ylim(-0.5, len(labels1) - 0.5)
+        plt.tight_layout()
+        plt.show()
+    elif sel_defensivell == ("Total Tackles"):
+        display(tottkls)
+        labels1 = tottkls['Name']
+        values1 = tottkls['Tot Tkls']
+        colors = ['crimson', 'paleturquoise', 'cornflowerblue', 'salmon', 'silver','orange','lightsteelblue','dodgerblue','blueviolet','limegreen']
+        height = .9
+        graph = plt.barh(y=labels1, width=values1, height=height, color=colors, align='center', edgecolor = 'black')
+        plt.bar_label(graph, labels=values1, label_type="edge",padding=-20)
+        plt.xlim(0, max(values1) * 1.05)
+        plt.ylim(-0.5, len(labels1) - 0.5)
+        plt.tight_layout()
+        plt.show()
+    elif sel_defensivell == ("Tackles For Loss"):
+        display(tfl)
+        labels1 = tfl['Name']
+        values1 = tfl['TFL']
+        colors = ['crimson', 'paleturquoise', 'cornflowerblue', 'salmon', 'silver','orange','lightsteelblue','dodgerblue','blueviolet','limegreen']
+        height = .9
+        graph = plt.barh(y=labels1, width=values1, height=height, color=colors, align='center', edgecolor = 'black')
+        plt.bar_label(graph, labels=values1, label_type="edge",padding=-20)
+        plt.xlim(0, max(values1) * 1.05)
+        plt.ylim(-0.5, len(labels1) - 0.5)
+        plt.tight_layout()
+        plt.show()
+    elif sel_defensivell == ("Sacks"):
+        display(sacks)
+        labels1 = sacks['Name']
+        values1 = sacks['Sacks']
+        colors = ['crimson', 'paleturquoise', 'cornflowerblue', 'salmon', 'silver','orange','lightsteelblue','dodgerblue','blueviolet','limegreen']
+        height = .9
+        graph = plt.barh(y=labels1, width=values1, height=height, color=colors, align='center', edgecolor = 'black')
+        plt.bar_label(graph, labels=values1, label_type="edge",padding=-20)
+        plt.xlim(0, max(values1) * 1.05)
+        plt.ylim(-0.5, len(labels1) - 0.5)
+        plt.tight_layout()
+        plt.show()
+    elif sel_defensivell == ("QB Hits"):
+        display(qbhits)
+        labels1 = qbhits['Name']
+        values1 = qbhits['QB Hits']
+        colors = ['crimson', 'paleturquoise', 'cornflowerblue', 'salmon', 'silver','orange','lightsteelblue','dodgerblue','blueviolet','limegreen']
+        height = .9
+        graph = plt.barh(y=labels1, width=values1, height=height, color=colors, align='center', edgecolor = 'black')
+        plt.bar_label(graph, labels=values1, label_type="edge",padding=-20)
+        plt.xlim(0, max(values1) * 1.05)
+        plt.ylim(-0.5, len(labels1) - 0.5)
+        plt.tight_layout()
+        plt.show()
+    elif sel_defensivell == ("Passes Defended"):
+        display(pdef)
+        labels1 = pdef['Name']
+        values1 = pdef['PD']
+        colors = ['crimson', 'paleturquoise', 'cornflowerblue', 'salmon', 'silver','orange','lightsteelblue','dodgerblue','blueviolet','limegreen']
+        height = .9
+        graph = plt.barh(y=labels1, width=values1, height=height, color=colors, align='center', edgecolor = 'black')
+        plt.bar_label(graph, labels=values1, label_type="edge",padding=-20)
+        plt.xlim(0, max(values1) * 1.05)
+        plt.ylim(-0.5, len(labels1) - 0.5)
+        plt.tight_layout()
+        plt.show()
+    elif sel_defensivell == ("Forced Fumbles"):
+        display(ff)
+        labels1 = ff['Name']
+        values1 = ff['FF']
+        colors = ['crimson', 'paleturquoise', 'cornflowerblue', 'salmon', 'silver','orange','lightsteelblue','dodgerblue','blueviolet','limegreen']
+        height = .9
+        graph = plt.barh(y=labels1, width=values1, height=height, color=colors, align='center', edgecolor = 'black')
+        plt.bar_label(graph, labels=values1, label_type="edge",padding=-20)
+        plt.xlim(0, max(values1) * 1.05)
+        plt.ylim(-0.5, len(labels1) - 0.5)
+        plt.tight_layout()
+        plt.show()
+    elif sel_defensivell == ("Fumble Recoveries"):
+        display(fr)
+        labels1 = fr['Name']
+        values1 = fr['FR']
+        colors = ['crimson', 'paleturquoise', 'cornflowerblue', 'salmon', 'silver','orange','lightsteelblue','dodgerblue','blueviolet','limegreen']
+        height = .9
+        graph = plt.barh(y=labels1, width=values1, height=height, color=colors, align='center', edgecolor = 'black')
+        plt.bar_label(graph, labels=values1, label_type="edge",padding=-20)
+        plt.xlim(0, max(values1) * 1.05)
+        plt.ylim(-0.5, len(labels1) - 0.5)
+        plt.tight_layout()
+        plt.show()
+    elif sel_defensivell == ("Interceptions"):
+        display(ints)
+        labels1 = ints['Name']
+        values1 = ints['Int']
+        colors = ['crimson', 'paleturquoise', 'cornflowerblue', 'salmon', 'silver','orange','lightsteelblue','dodgerblue','blueviolet','limegreen']
+        height = .9
+        graph = plt.barh(y=labels1, width=values1, height=height, color=colors, align='center', edgecolor = 'black')
+        plt.bar_label(graph, labels=values1, label_type="edge",padding=-20)
+        plt.xlim(0, max(values1) * 1.05)
+        plt.ylim(-0.5, len(labels1) - 0.5)
+        plt.tight_layout()
+        plt.show()
+    elif sel_defensivell == ("Defensive TDs"):
+        display(deftds)
+        labels1 = deftds['Name']
+        values1 = deftds['Def TDs']
+        colors = ['crimson', 'paleturquoise', 'cornflowerblue', 'salmon', 'silver','orange','lightsteelblue','dodgerblue','blueviolet','limegreen']
+        height = .9
+        graph = plt.barh(y=labels1, width=values1, height=height, color=colors, align='center', edgecolor = 'black')
+        plt.bar_label(graph, labels=values1, label_type="edge",padding=-20)
+        plt.xlim(0, max(values1) * 1.05)
+        plt.ylim(-0.5, len(labels1) - 0.5)
+        plt.tight_layout()
+        plt.show()
+    elif sel_defensivell == ("IDP Fantasy Pts"):
+        display(deffanpts)
+        labels1 = deffanpts['Name']
+        values1 = deffanpts['Fan Pts Avg']
+        colors = ['crimson', 'paleturquoise', 'cornflowerblue', 'salmon', 'silver','orange','lightsteelblue','dodgerblue','blueviolet','limegreen']
+        height = .9
+        graph = plt.barh(y=labels1, width=values1, height=height, color=colors, align='center', edgecolor = 'black')
+        plt.bar_label(graph, labels=values1, label_type="edge",padding=-35)
+        plt.xlim(0, max(values1) * 1.05)
+        plt.ylim(-0.5, len(labels1) - 0.5)
+        plt.tight_layout()
+        plt.show()
+pass
+
+def ll_kicking(sel_kickingll):
+    if sel_kickingll == ("Extra Points Made"):
+        display(xpm)
+        labels1 = xpm['Name']
+        values1 = xpm['XPM']
+        colors = ['crimson', 'paleturquoise', 'cornflowerblue', 'salmon', 'silver','orange','lightsteelblue','dodgerblue','blueviolet','limegreen']
+        height = .9
+        graph = plt.barh(y=labels1, width=values1, height=height, color=colors, align='center', edgecolor = 'black')
+        plt.bar_label(graph, labels=values1, label_type="edge",padding=-20)
+        plt.xlim(0, max(values1) * 1.05)
+        plt.ylim(-0.5, len(labels1) - 0.5)
+        plt.tight_layout()
+        plt.show()
+    elif sel_kickingll == ("Field Goals Made"):
+        display(fgm)
+        labels1 = fgm['Name']
+        values1 = fgm['FGM']
+        colors = ['crimson', 'paleturquoise', 'cornflowerblue', 'salmon', 'silver','orange','lightsteelblue','dodgerblue','blueviolet','limegreen']
+        height = .9
+        graph = plt.barh(y=labels1, width=values1, height=height, color=colors, align='center', edgecolor = 'black')
+        plt.bar_label(graph, labels=values1, label_type="edge",padding=-20)
+        plt.xlim(0, max(values1) * 1.05)
+        plt.ylim(-0.5, len(labels1) - 0.5)
+        plt.tight_layout()
+        plt.show()
+    elif sel_kickingll == ("Field Goal %"):
+        display(fgperc)
+        labels1 = fgperc['Name']
+        values1 = fgperc['FG%']
+        colors = ['crimson', 'paleturquoise', 'cornflowerblue', 'salmon', 'silver','orange','lightsteelblue','dodgerblue','blueviolet','limegreen']
+        height = .9
+        graph = plt.barh(y=labels1, width=values1, height=height, color=colors, align='center', edgecolor = 'black')
+        plt.bar_label(graph, labels=values1, label_type="edge",padding=-35)
+        plt.xlim(0, max(values1) * 1.05)
+        plt.ylim(-0.5, len(labels1) - 0.5)
+        plt.tight_layout()
+        plt.show()
+    elif sel_kickingll == ("Field Goal Long"):
+        display(fglong)
+        labels1 = fglong['Name']
+        values1 = fglong['FG Lng']
+        colors = ['crimson', 'paleturquoise', 'cornflowerblue', 'salmon', 'silver','orange','lightsteelblue','dodgerblue','blueviolet','limegreen']
+        height = .9
+        graph = plt.barh(y=labels1, width=values1, height=height, color=colors, align='center', edgecolor = 'black')
+        plt.bar_label(graph, labels=values1, label_type="edge",padding=-20)
+        plt.xlim(0, max(values1) * 1.05)
+        plt.ylim(-0.5, len(labels1) - 0.5)
+        plt.tight_layout()
+        plt.show()
+    elif sel_kickingll == ("50+ Yds FGM"):
+        display(fgm50)
+        labels1 = fgm50['Name']
+        values1 = fgm50['FGM 50+']
+        colors = ['crimson', 'paleturquoise', 'cornflowerblue', 'salmon', 'silver','orange','lightsteelblue','dodgerblue','blueviolet','limegreen']
+        height = .9
+        graph = plt.barh(y=labels1, width=values1, height=height, color=colors, align='center', edgecolor = 'black')
+        plt.bar_label(graph, labels=values1, label_type="edge",padding=-20)
+        plt.xlim(0, max(values1) * 1.05)
+        plt.ylim(-0.5, len(labels1) - 0.5)
+        plt.tight_layout()
+        plt.show()
+    elif sel_kickingll == ("K Fantasy Pts"):
+        display(kfanpts)
+        labels1 = kfanpts['Name']
+        values1 = kfanpts['Fan Pts Avg']
+        colors = ['crimson', 'paleturquoise', 'cornflowerblue', 'salmon', 'silver','orange','lightsteelblue','dodgerblue','blueviolet','limegreen']
+        height = .9
+        graph = plt.barh(y=labels1, width=values1, height=height, color=colors, align='center', edgecolor = 'black')
+        plt.bar_label(graph, labels=values1, label_type="edge",padding=-35)
+        plt.xlim(0, max(values1) * 1.05)
+        plt.ylim(-0.5, len(labels1) - 0.5)
+        plt.tight_layout()
+        plt.show()
+pass
+
+def ll_punting(sel_puntingll):
+    if sel_puntingll == ("Punting Yards"):
+        display(puntyds)
+        labels1 = puntyds['Name']
+        values1 = puntyds['Punt Yds']
+        colors = ['crimson', 'paleturquoise', 'cornflowerblue', 'salmon', 'silver','orange','lightsteelblue','dodgerblue','blueviolet','limegreen']
+        height = .9
+        graph = plt.barh(y=labels1, width=values1, height=height, color=colors, align='center', edgecolor = 'black')
+        plt.bar_label(graph, labels=values1, label_type="edge",padding=-30)
+        plt.xlim(0, max(values1) * 1.05)
+        plt.ylim(-0.5, len(labels1) - 0.5)
+        plt.tight_layout()
+        plt.show()
+    elif sel_puntingll == ("Punting Avg"):
+        display(puntavg)
+        labels1 = puntavg['Name']
+        values1 = puntavg['Punt Avg']
+        colors = ['crimson', 'paleturquoise', 'cornflowerblue', 'salmon', 'silver','orange','lightsteelblue','dodgerblue','blueviolet','limegreen']
+        height = .9
+        graph = plt.barh(y=labels1, width=values1, height=height, color=colors, align='center', edgecolor = 'black')
+        plt.bar_label(graph, labels=values1, label_type="edge",padding=-35)
+        plt.xlim(0, max(values1) * 1.05)
+        plt.ylim(-0.5, len(labels1) - 0.5)
+        plt.tight_layout()
+        plt.show()
+    elif sel_puntingll == ("Punting Long"):
+        display(puntlong)
+        labels1 = puntlong['Name']
+        values1 = puntlong['Punt Lng']
+        colors = ['crimson', 'paleturquoise', 'cornflowerblue', 'salmon', 'silver','orange','lightsteelblue','dodgerblue','blueviolet','limegreen']
+        height = .9
+        graph = plt.barh(y=labels1, width=values1, height=height, color=colors, align='center', edgecolor = 'black')
+        plt.bar_label(graph, labels=values1, label_type="edge",padding=-20)
+        plt.xlim(0, max(values1) * 1.05)
+        plt.ylim(-0.5, len(labels1) - 0.5)
+        plt.tight_layout()
+        plt.show()
+pass
+
+def ll_returning(sel_returningll):
+    if sel_returningll == ("Punt Return Yds"):
+        display(puntretyds)
+        labels1 = puntretyds['Name']
+        values1 = puntretyds['Punt Ret Yds']
+        colors = ['crimson', 'paleturquoise', 'cornflowerblue', 'salmon', 'silver','orange','lightsteelblue','dodgerblue','blueviolet','limegreen']
+        height = .9
+        graph = plt.barh(y=labels1, width=values1, height=height, color=colors, align='center', edgecolor = 'black')
+        plt.bar_label(graph, labels=values1, label_type="edge",padding=-20)
+        plt.xlim(0, max(values1) * 1.05)
+        plt.ylim(-0.5, len(labels1) - 0.5)
+        plt.tight_layout()
+        plt.show()
+    elif sel_returningll == ("Punt Return Avg"):
+        display(puntretavg)
+        labels1 = puntretavg['Name']
+        values1 = puntretavg['Punt Ret Avg']
+        colors = ['crimson', 'paleturquoise', 'cornflowerblue', 'salmon', 'silver','orange','lightsteelblue','dodgerblue','blueviolet','limegreen']
+        height = .9
+        graph = plt.barh(y=labels1, width=values1, height=height, color=colors, align='center', edgecolor = 'black')
+        plt.bar_label(graph, labels=values1, label_type="edge",padding=-35)
+        plt.xlim(0, max(values1) * 1.05)
+        plt.ylim(-0.5, len(labels1) - 0.5)
+        plt.tight_layout()
+        plt.show()
+    elif sel_returningll == ("Punt Return TDs"):
+        display(puntrettds)
+        labels1 = puntrettds['Name']
+        values1 = puntrettds['Punt Ret TDs']
+        colors = ['crimson', 'paleturquoise', 'cornflowerblue', 'salmon', 'silver','orange','lightsteelblue','dodgerblue','blueviolet','limegreen']
+        height = .9
+        graph = plt.barh(y=labels1, width=values1, height=height, color=colors, align='center', edgecolor = 'black')
+        plt.bar_label(graph, labels=values1, label_type="edge",padding=-20)
+        plt.xlim(0, max(values1) * 1.05)
+        plt.ylim(-0.5, len(labels1) - 0.5)
+        plt.tight_layout()
+        plt.show()
+    elif sel_returningll == ("Kick Return Yds"):
+        display(kickretyds)
+        labels1 = kickretyds['Name']
+        values1 = kickretyds['Kick Ret Yds']
+        colors = ['crimson', 'paleturquoise', 'cornflowerblue', 'salmon', 'silver','orange','lightsteelblue','dodgerblue','blueviolet','limegreen']
+        height = .9
+        graph = plt.barh(y=labels1, width=values1, height=height, color=colors, align='center', edgecolor = 'black')
+        plt.bar_label(graph, labels=values1, label_type="edge",padding=-20)
+        plt.xlim(0, max(values1) * 1.05)
+        plt.ylim(-0.5, len(labels1) - 0.5)
+        plt.tight_layout()
+        plt.show()
+    elif sel_returningll == ("Kick Return Avg"):
+        display(kickretavg)
+        labels1 = kickretavg['Name']
+        values1 = kickretavg['Kick Ret Avg']
+        colors = ['crimson', 'paleturquoise', 'cornflowerblue', 'salmon', 'silver','orange','lightsteelblue','dodgerblue','blueviolet','limegreen']
+        height = .9
+        graph = plt.barh(y=labels1, width=values1, height=height, color=colors, align='center', edgecolor = 'black')
+        plt.bar_label(graph, labels=values1, label_type="edge",padding=-35)
+        plt.xlim(0, max(values1) * 1.05)
+        plt.ylim(-0.5, len(labels1) - 0.5)
+        plt.tight_layout()
+        plt.show()
+    elif sel_returningll == ("Kick Return TDs"):
+        display(kickrettds)
+        labels1 = kickrettds['Name']
+        values1 = kickrettds['Kick Ret TDs']
+        colors = ['crimson', 'paleturquoise', 'cornflowerblue', 'salmon', 'silver','orange','lightsteelblue','dodgerblue','blueviolet','limegreen']
+        height = .9
+        graph = plt.barh(y=labels1, width=values1, height=height, color=colors, align='center', edgecolor = 'black')
+        plt.bar_label(graph, labels=values1, label_type="edge",padding=-20)
+        plt.xlim(0, max(values1) * 1.05)
+        plt.ylim(-0.5, len(labels1) - 0.5)
+        plt.tight_layout()
+        plt.show()
+    elif sel_returningll == ("Total Return TDs"):
+        display(rettds)
+        labels1 = rettds['Name']
+        values1 = rettds['Ret TDs']
+        colors = ['crimson', 'paleturquoise', 'cornflowerblue', 'salmon', 'silver','orange','lightsteelblue','dodgerblue','blueviolet','limegreen']
+        height = .9
+        graph = plt.barh(y=labels1, width=values1, height=height, color=colors, align='center', edgecolor = 'black')
+        plt.bar_label(graph, labels=values1, label_type="edge",padding=-20)
+        plt.xlim(0, max(values1) * 1.05)
+        plt.ylim(-0.5, len(labels1) - 0.5)
+        plt.tight_layout()
+        plt.show()
+pass
+
+def ll_miscellaneous(sel_miscellaneousll):
+    if sel_miscellaneousll == ("Fumbles Lost"):
+        display(fumblost)
+        labels1 = fumblost['Name']
+        values1 = fumblost['Fumb']
+        colors = ['crimson', 'paleturquoise', 'cornflowerblue', 'salmon', 'silver','orange','lightsteelblue','dodgerblue','blueviolet','limegreen']
+        height = .9
+        graph = plt.barh(y=labels1, width=values1, height=height, color=colors, align='center', edgecolor = 'black')
+        plt.bar_label(graph, labels=values1, label_type="edge",padding=-20)
+        plt.xlim(0, max(values1) * 1.05)
+        plt.ylim(-0.5, len(labels1) - 0.5)
+        plt.tight_layout()
+        plt.show()
+    elif sel_miscellaneousll == ("2 Pt Conversions"):
+        display(twopt)
+        labels1 = twopt['Name']
+        values1 = twopt['2pt Conv']
+        colors = ['crimson', 'paleturquoise', 'cornflowerblue', 'salmon', 'silver','orange','lightsteelblue','dodgerblue','blueviolet','limegreen']
+        height = .9
+        graph = plt.barh(y=labels1, width=values1, height=height, color=colors, align='center', edgecolor = 'black')
+        plt.bar_label(graph, labels=values1, label_type="edge",padding=-20)
+        plt.xlim(0, max(values1) * 1.05)
+        plt.ylim(-0.5, len(labels1) - 0.5)
+        plt.tight_layout()
+        plt.show()
+    elif sel_miscellaneousll == ("Snaps"):
+        display(snaps)
+        labels1 = snaps['Name']
+        values1 = snaps['Tot Snaps']
+        colors = ['crimson', 'paleturquoise', 'cornflowerblue', 'salmon', 'silver','orange','lightsteelblue','dodgerblue','blueviolet','limegreen']
+        height = .9
+        graph = plt.barh(y=labels1, width=values1, height=height, color=colors, align='center', edgecolor = 'black')
+        plt.bar_label(graph, labels=values1, label_type="edge",padding=-30)
+        plt.xlim(0, max(values1) * 1.05)
+        plt.ylim(-0.5, len(labels1) - 0.5)
+        plt.tight_layout()
+        plt.show()
+pass
+
+#2022
+def ll_passing2(sel_passingll2):
+    if sel_passingll2 == ("Passing Yards"):
+        display(passyds2)
+    elif sel_passingll2 == ("Passing TDs"):
+        display(passtds2)
+    elif sel_passingll2 == ("Passing INTs"):
+        display(passints2)
+    elif sel_passingll2 == ("Passer Rating"):
+        display(passrat2)
+    elif sel_passingll2 == ("Completion %"):
+        display(compperc2)
+    elif sel_passingll2 == ("Longest Pass"):
+        display(passlong2)
+    elif sel_passingll2 == ("QB Fantasy Pts"):
+        display(qbfanpts2)
+pass
+
+def ll_rushing2(sel_rushingll2):
+    if sel_rushingll2 == ("Rushing Yards"):
+        display(rushyds2)
+    elif sel_rushingll2 == ("Rushing TDs"):
+        display(rushtds2)
+    elif sel_rushingll2 == ("Rushing Avg"):
+        display(rushavg2)
+    elif sel_rushingll2 == ("Longest Rush"):
+        display(rushlong2)
+    elif sel_rushingll2 == ("RB Fantasy Pts"):
+        display(rbfanpts2)
+pass
+
+def ll_receiving2(sel_receivingll2):
+    if sel_receivingll2 == ("Receptions"):
+        display(rec2)
+    elif sel_receivingll2 == ("Receiving Yards"):
+        display(recyds2)
+    elif sel_receivingll2 == ("Receiving Yds/Tgt"):
+        display(recydstgt2)
+    elif sel_receivingll2 == ("Receiving TDs"):
+        display(rectds2)
+    elif sel_receivingll2 == ("Longest Reception"):
+        display(reclng2)
+    elif sel_receivingll2 == ("WR/TE Fantasy Pts"):
+        display(wrtefanpts2)
+pass
+
+def ll_defensive2(sel_defensivell2):
+    if sel_defensivell2 == ("Solo Tackles"):
+        display(solotkls2)
+    elif sel_defensivell2 == ("Total Tackles"):
+        display(tottkls2)
+    elif sel_defensivell2 == ("Tackles For Loss"):
+        display(tfl2)
+    elif sel_defensivell2 == ("Sacks"):
+        display(sacks2)
+    elif sel_defensivell2 == ("QB Hits"):
+        display(qbhits2)
+    elif sel_defensivell2 == ("Passes Defended"):
+        display(pdef2)
+    elif sel_defensivell2 == ("Forced Fumbles"):
+        display(ff2)
+    elif sel_defensivell2 == ("Fumble Recoveries"):
+        display(fr2)
+    elif sel_defensivell2 == ("Interceptions"):
+        display(ints2)
+    elif sel_defensivell2 == ("Defensive TDs"):
+        display(deftds2)
+    elif sel_defensivell2 == ("IDP Fantasy Pts"):
+        display(deffanpts2)
+pass
+
+def ll_kicking2(sel_kickingll2):
+    if sel_kickingll2 == ("Extra Points Made"):
+        display(xpm2)
+    elif sel_kickingll2 == ("Field Goals Made"):
+        display(fgm2)
+    elif sel_kickingll2 == ("Field Goal %"):
+        display(fgperc2)
+    elif sel_kickingll2 == ("Field Goal Long"):
+        display(fglong2)
+    elif sel_kickingll2 == ("50+ Yds FGM"):
+        display(fgm502)
+    elif sel_kickingll2 == ("K Fantasy Pts"):
+        display(kfanpts2)
+pass
+
+def ll_punting2(sel_puntingll2):
+    if sel_puntingll2 == ("Punting Yards"):
+        display(puntyds2)
+    elif sel_puntingll2 == ("Punting Avg"):
+        display(puntavg2)
+    elif sel_puntingll2 == ("Punting Long"):
+        display(puntlong2)
+pass
+
+def ll_returning2(sel_returningll2):
+    if sel_returningll2 == ("Punt Return Yds"):
+        display(puntretyds2)
+    elif sel_returningll2 == ("Punt Return Avg"):
+        display(puntretavg2)
+    elif sel_returningll2 == ("Punt Return TDs"):
+        display(puntrettds2)
+    elif sel_returningll2 == ("Kick Return Yds"):
+        display(kickretyds2)
+    elif sel_returningll2 == ("Kick Return Avg"):
+        display(kickretavg2)
+    elif sel_returningll2 == ("Kick Return TDs"):
+        display(kickrettds2)
+    elif sel_returningll2 == ("Total Return TDs"):
+        display(rettds2)
+pass
+
+def ll_miscellaneous2(sel_miscellaneousll2):
+    if sel_miscellaneousll2 == ("Fumbles Lost"):
+        display(fumblost2)
+    elif sel_miscellaneousll2 == ("2 Pt Conversions"):
+        display(twopt2)
+    elif sel_miscellaneousll2 == ("Snaps"):
+        display(snaps2)
+pass
+
+
+# Select Year/Cat
+def ll_cat(sel_seasonll, sel_catll):
+    if sel_seasonll == 2021:
+        if sel_catll == ("Select a Position"):
+            display(HTML("<h3><font color='red'>To view the </font>data<font color='red'>, select a </font>position <font color='red'>first!</font></h3>"))
+        elif sel_catll == ("Passing"):
+            impassing = widgets.interact_manual(ll_passing, sel_passingll = sel_passingll1)
+            impassing.widget.children[1].description = 'Filter'
+            display(impassing) 
+        elif sel_catll == ("Rushing"):
+            imrushing = widgets.interact_manual(ll_rushing, sel_rushingll = sel_rushingll1)
+            imrushing.widget.children[1].description = 'Filter'
+            display(imrushing) 
+        elif sel_catll == ("Receiving"):
+            imreceiving = widgets.interact_manual(ll_receiving, sel_receivingll = sel_receivingll1)
+            imreceiving.widget.children[1].description = 'Filter'
+            display(imreceiving) 
+        elif sel_catll == ("Defensive"):
+            imdefensive = widgets.interact_manual(ll_defensive, sel_defensivell = sel_defensivell1)
+            imdefensive.widget.children[1].description = 'Filter'
+            display(imdefensive) 
+        elif sel_catll == ("Kicking"):
+            imkicking = widgets.interact_manual(ll_kicking, sel_kickingll = sel_kickingll1)
+            imkicking.widget.children[1].description = 'Filter'
+            display(imkicking) 
+        elif sel_catll == ("Punting"):
+            impunting = widgets.interact_manual(ll_punting, sel_puntingll = sel_puntingll1)
+            impunting.widget.children[1].description = 'Filter'
+            display(impunting) 
+        elif sel_catll == ("Returning"):
+            imreturning = widgets.interact_manual(ll_returning, sel_returningll = sel_returningll1)
+            imreturning.widget.children[1].description = 'Filter'
+            display(imreturning) 
+        elif sel_catll == ("Miscellaneous"):
+            immiscellaneous = widgets.interact_manual(ll_miscellaneous, sel_miscellaneousll = sel_miscellaneousll1)
+            immiscellaneous.widget.children[1].description = 'Filter'
+            display(immiscellaneous) 
+    if sel_seasonll == 2022:
+        if sel_catll == ("Select a Position"):
+            display(HTML("<h3><font color='red'>To view the </font>data<font color='red'>, select a </font>position <font color='red'>first!</font></h3>"))
+        elif sel_catll == ("Passing"):
+            impassing2 = widgets.interact_manual(ll_passing2, sel_passingll2 = sel_passingll22)
+            impassing2.widget.children[2].description = 'Filter'
+            display(impassing2)  
+        elif sel_catll == ("Rushing"):
+            imrushing2 = widgets.interact_manual(ll_rushing2, sel_rushingll2 = sel_rushingll22)
+            imrushing2.widget.children[1].description = 'Filter'
+            display(imrushing2) 
+        elif sel_catll == ("Receiving"):
+            imreceiving2 = widgets.interact_manual(ll_receiving2, sel_receivingll2 = sel_receivingll22)
+            imreceiving2.widget.children[1].description = 'Filter'
+            display(imreceiving2) 
+        elif sel_catll == ("Defensive"):
+            imdefensive2 = widgets.interact_manual(ll_defensive2, sel_defensivell2 = sel_defensivell22)
+            imdefensive2.widget.children[1].description = 'Filter'
+            display(imdefensive2) 
+        elif sel_catll == ("Kicking"):
+            imkicking2 = widgets.interact_manual(ll_kicking2, sel_kickingll2 = sel_kickingll22)
+            imkicking2.widget.children[1].description = 'Filter'
+            display(imkicking2) 
+        elif sel_catll == ("Punting"):
+            impunting2 = widgets.interact_manual(ll_punting2, sel_puntingll2 = sel_puntingll22)
+            impunting2.widget.children[1].description = 'Filter'
+            display(impunting2) 
+        elif sel_catll == ("Returning"):
+            imreturning2 = widgets.interact_manual(ll_returning2, sel_returningll2 = sel_returningll22)
+            imreturning2.widget.children[1].description = 'Filter'
+            display(imreturning2) 
+        elif sel_catll == ("Miscellaneous"):
+            immiscellaneous2 = widgets.interact_manual(ll_miscellaneous2, sel_miscellaneousll2 = sel_miscellaneousll22)
+            immiscellaneous2.widget.children[1].description = 'Filter'
+            display(immiscellaneous2) 
+pass
+
+### MAIN FUNCTION ###
+def cat_sel(sel_category):
+    if sel_category == "Player Stats": 
+        im1 = widgets.interact_manual(player_stat, sel_season = sel_season1, position = sel_position1)
+        im1.widget.children[2].description = 'Filter'
+        display(im1) #PLAYER STAT WIDGET
+    elif sel_category == "League Leaders": 
+        im2 = widgets.interact_manual(ll_cat, sel_seasonll = sel_seasonll1, sel_catll = sel_catll1)
+        im2.widget.children[2].description = 'Filter'
+        display(im2) #PLAYER STAT WIDGET
+pass
+
+### CAT_SEL WIDGET ###
+im3 = widgets.interact_manual(cat_sel, sel_category = sel_category1)
+im3.widget.children[1].description = 'Filter'
+display(im3)
